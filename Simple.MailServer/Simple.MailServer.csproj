@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4677857B-02B9-4A32-A8C6-222094672DF5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Simple.MailServer</RootNamespace>
+    <AssemblyName>Simple.MailServer</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseConnection.cs" />
+    <Compile Include="BaseSession.cs" />
+    <Compile Include="BufferEventArgs.cs" />
+    <Compile Include="ClientConnectionEventArgs.cs" />
+    <Compile Include="ICanReadLineAsync.cs" />
+    <Compile Include="RawLineEventArgs.cs" />
+    <Compile Include="Smtp\IRespondToSmtpRawLine.cs" />
+    <Compile Include="Smtp\DefaultSmtpRawLineResponder.cs" />
+    <Compile Include="Smtp\DefaultSmtpDataResponder.cs" />
+    <Compile Include="Smtp\IRespondToSmtpData.cs" />
+    <Compile Include="Smtp\IRespondToSmtpReset.cs" />
+    <Compile Include="Smtp\DefaultSmtpResetResponder.cs" />
+    <Compile Include="Smtp\DefaultSmtpVerifyResponder.cs" />
+    <Compile Include="Smtp\IRespondToSmtpVerify.cs" />
+    <Compile Include="Smtp\DefaultSmtpRecipientToResponder.cs" />
+    <Compile Include="Smtp\DefaultSmtpMailFromResponder.cs" />
+    <Compile Include="Smtp\DefaultSmtpIdentificationResponder.cs" />
+    <Compile Include="Smtp\IRespondToSmtpIdentification.cs" />
+    <Compile Include="Smtp\IRespondToSmtpRecipientTo.cs" />
+    <Compile Include="Smtp\IRespondToSmtpMailFrom.cs" />
+    <Compile Include="Smtp\SmtpCommandParser.cs" />
+    <Compile Include="RawLineDecoder.cs" />
+    <Compile Include="Smtp\SmtpResponderFactory.cs" />
+    <Compile Include="Smtp\SmtpResponse.cs" />
+    <Compile Include="Smtp\SmtpSessionEventArgs.cs" />
+    <Compile Include="Smtp\SmtpConnectionEventArgs.cs" />
+    <Compile Include="Logging\MailServerNullLogger.cs" />
+    <Compile Include="Logging\MailServerDebugLogger.cs" />
+    <Compile Include="Dns\ANameRecord.cs" />
+    <Compile Include="Dns\Enums.cs" />
+    <Compile Include="Dns\InvalidResponseException.cs" />
+    <Compile Include="Dns\MXRecord.cs" />
+    <Compile Include="Dns\NoResponseException.cs" />
+    <Compile Include="Dns\NSRecord.cs" />
+    <Compile Include="Dns\Pointer.cs" />
+    <Compile Include="Dns\Question.cs" />
+    <Compile Include="Dns\RecordBase.cs" />
+    <Compile Include="Dns\Request.cs" />
+    <Compile Include="Dns\Resolver.cs" />
+    <Compile Include="Dns\ResourceRecord.cs" />
+    <Compile Include="Dns\Response.cs" />
+    <Compile Include="Dns\SoaRecord.cs" />
+    <Compile Include="IHaveIdleTimeSpan.cs" />
+    <Compile Include="IClientConnection.cs" />
+    <Compile Include="IHaveConnections.cs" />
+    <Compile Include="Logging\IMailServerLogger.cs" />
+    <Compile Include="IObservableServerConfiguration.cs" />
+    <Compile Include="Logging\MailServerLogger.cs" />
+    <Compile Include="Mime\StringReaderStream.cs" />
+    <Compile Include="Mime\DelimitingReadableStream.cs" />
+    <Compile Include="Mime\DateTimeRfc2822.cs" />
+    <Compile Include="Mime\QuotedPrintableEncoderStream.cs" />
+    <Compile Include="Mime\QuotedPrintableDecoderStream.cs" />
+    <Compile Include="ICanDisconnect.cs" />
+    <Compile Include="MailAddressWithParameters.cs" />
+    <Compile Include="Mime\Rfc5335Decoder.cs" />
+    <Compile Include="Smtp\SmtpServerConfiguration.cs" />
+    <Compile Include="Smtp\SmtpConnection.cs" />
+    <Compile Include="ResponseEventArgs.cs" />
+    <Compile Include="Smtp\SmtpServer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PortListener.cs" />
+    <Compile Include="IdleConnectionDisconnectorWatchdog.cs" />
+    <Compile Include="Smtp\SmtpSession.cs" />
+    <Compile Include="Smtp\SmtpIdentification.cs" />
+    <Compile Include="Smtp\SmtpIdentificationMode.cs" />
+    <Compile Include="Smtp\SmtpSessionInfo.cs" />
+    <Compile Include="Extensions\StreamReaderExtensions.cs" />
+    <Compile Include="Smtp\SmtpSessionInfoResponder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pop3\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
