@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Simple.MailServer.Tests
@@ -46,17 +47,25 @@ namespace Simple.MailServer.Tests
                 portListener.StartListen();
                 portListener.StopListen();
 
-                using (var client = new TcpClient())
+                var task = Task<bool>.Factory.StartNew(() =>
                 {
-                    try
+                    using (var client = new TcpClient())
                     {
-                        var task = client.ConnectAsync(IPAddress.Loopback.ToString(), testPort);
-                        Assert.False(task.Wait(200));
+                        try
+                        {
+                            client.Connect(IPAddress.Loopback.ToString(), testPort);
+                        }
+                        catch (Exception)
+                        {
+                            return false;
+                        }
+                        return true;
                     }
-                    catch (SocketException)
-                    {
-                        // this is expected
-                    }
+                }, TaskCreationOptions.LongRunning);
+
+                if (task.Wait(200))
+                {
+                    Assert.False(task.Result);
                 }
             }
         }
