@@ -1,9 +1,7 @@
 ﻿using Simple.MailServer.Logging;
-using Simple.MailServer.Mime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -159,8 +157,6 @@ namespace Simple.MailServer.Smtp
 
         private async Task SetupSessionThenProcessCommands(SmtpConnection connection, SmtpSession session)
         {
-            var sessionReader = new StringReaderStream(connection.NetworkStream);
-
             await SendGreetingAsync(connection, Greeting ?? Configuration.DefaultGreeting);
 
             var sessionInfoParseResponder = new SmtpSessionInfoResponder(session.ResponderFactory, session.SessionInfo);
