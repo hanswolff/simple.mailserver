@@ -48,8 +48,15 @@ namespace Simple.MailServer.Tests
 
                 using (var client = new TcpClient())
                 {
-                    var task = client.ConnectAsync(IPAddress.Loopback.ToString(), testPort);
-                    Assert.False(task.Wait(200));
+                    try
+                    {
+                        var task = client.ConnectAsync(IPAddress.Loopback.ToString(), testPort);
+                        Assert.False(task.Wait(200));
+                    }
+                    catch (SocketException)
+                    {
+                        // this is expected
+                    }
                 }
             }
         }
