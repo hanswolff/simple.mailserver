@@ -58,6 +58,7 @@
     <Compile Include="PortListenerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawLineDecoderFacts.cs" />
+    <Compile Include="Smtp\Config\SmtpServerConfigurationFacts.cs" />
     <Compile Include="Smtp\SmtpServerFacts.cs" />
     <Compile Include="Smtp\SmtpSessionInfoResponderFacts.cs" />
     <Compile Include="TestHelpers.cs" />
