@@ -49,69 +49,93 @@ namespace Simple.MailServer.Smtp
         {
             try
             {
-                if (lineBuf.Length > 2040)
-                {
-                    return new SmtpResponse(500, "Line too long");
-                }
-
-                if (InDataMode)
-                {
-                    if (lineBuf.Length == 1 && lineBuf[0] == '.')
-                    {
-                        return ProcessCommandDataEnd();
-                    }
-                    return ProcessDataLine(lineBuf);
-                }
-
-                var line = Encoding.UTF8.GetString(lineBuf);
-
-                var rawLineResponse = ProcessRawLine(line);
-                if (rawLineResponse != SmtpResponse.None)
-                    return rawLineResponse;
-
-                string command = null;
-                string arguments = "";
-
-                Func<string, string, SmtpResponse> commandFunc = null;
-
-                var pos = line.IndexOf(':');
-                if (pos >= 0)
-                {
-                    command = line.Substring(0, pos + 1).ToUpperInvariant().Trim();
-                    arguments = line.Substring(pos + 1);
-                    _commandMapping.TryGetValue(command, out commandFunc);
-                }
-                if (commandFunc == null)
-                {
-                    pos = line.IndexOf(' ');
-                    if (pos >= 0)
-                    {
-                        command = line.Substring(0, pos).ToUpperInvariant().Trim();
-                        arguments = line.Substring(pos + 1);
-                        _commandMapping.TryGetValue(command, out commandFunc);
-                    }
-                }
-                if (command == null)
-                {
-                    command = line.ToUpperInvariant().Trim();
-                    _commandMapping.TryGetValue(command, out commandFunc);
-                }
-
-                {
-                    if (commandFunc != null)
-                    {
-                        var response = commandFunc(command, arguments);
-                        return response;
-                    }
-
-                    return new SmtpResponse(502, "5.5.2 Command not implemented");
-                }
+                return ProcessLineCommandDontCareAboutException(lineBuf);
             }
             catch (Exception ex)
             {
                 MailServerLogger.Instance.Error(ex);
                 return new SmtpResponse(500, "Internal Server Error");
             }
+        }
+
+        private SmtpResponse ProcessLineCommandDontCareAboutException(byte[] lineBuf)
+        {
+            SmtpResponse smtpResponse;
+
+            if (IsLineTooLong(lineBuf, out smtpResponse))
+                return smtpResponse;
+
+            if (InDataMode)
+                return ProcessLineInDataMode(lineBuf);
+
+            var line = Encoding.UTF8.GetString(lineBuf);
+
+            if (ProcessRawLineHasResponse(line, out smtpResponse))
+                return smtpResponse;
+
+            string command = null;
+            string arguments = "";
+
+            Func<string, string, SmtpResponse> commandFunc = null;
+
+            // TODO: this code is a mess, make it readable
+            var pos = line.IndexOf(':');
+            if (pos >= 0)
+            {
+                command = line.Substring(0, pos + 1).ToUpperInvariant().Trim();
+                arguments = line.Substring(pos + 1);
+                _commandMapping.TryGetValue(command, out commandFunc);
+            }
+            if (commandFunc == null)
+            {
+                pos = line.IndexOf(' ');
+                if (pos >= 0)
+                {
+                    command = line.Substring(0, pos).ToUpperInvariant().Trim();
+                    arguments = line.Substring(pos + 1);
+                    _commandMapping.TryGetValue(command, out commandFunc);
+                }
+            }
+            if (command == null)
+            {
+                command = line.ToUpperInvariant().Trim();
+                _commandMapping.TryGetValue(command, out commandFunc);
+            }
+
+            if (commandFunc != null)
+            {
+                var response = commandFunc(command, arguments);
+                return response;
+            }
+
+            return new SmtpResponse(502, "5.5.2 Command not implemented");
+        }
+
+        private static bool IsLineTooLong(byte[] lineBuf, out SmtpResponse smtpResponse)
+        {
+            if (lineBuf.Length > 2040)
+            {
+                smtpResponse = new SmtpResponse(500, "Line too long");
+                return true;
+            }
+
+            smtpResponse = SmtpResponse.None;
+            return false;
+        }
+
+        private bool ProcessRawLineHasResponse(string line, out SmtpResponse smtpResponse)
+        {
+            smtpResponse = ProcessRawLine(line);
+            return (smtpResponse != SmtpResponse.None);
+        }
+
+        private SmtpResponse ProcessLineInDataMode(byte[] lineBuf)
+        {
+            if (lineBuf.Length == 1 && lineBuf[0] == '.')
+            {
+                return ProcessCommandDataEnd();
+            }
+            return ProcessDataLine(lineBuf);
         }
     }
 }
