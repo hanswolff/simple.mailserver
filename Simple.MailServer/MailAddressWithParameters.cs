@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Mail;
@@ -47,16 +48,7 @@ namespace Simple.MailServer
             AssignMailAddress(new MailAddress(line.Substring(0, pos)));
 
             var parts = line.Substring(pos + 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var part in parts)
-            {
-                var nameValue = part.Split('=');
-                if (nameValue.Length == 1)
-                {
-                    Parameters[nameValue[0]] = "";
-                    continue;
-                }
-                Parameters[nameValue[0]] = String.Join("=", nameValue.Skip(1));
-            }
+            SplitNameValuesInParts(parts, Parameters);
         }
 
         private void AssignMailAddress(MailAddress mailAddress)
@@ -64,6 +56,20 @@ namespace Simple.MailServer
             MailAddress = mailAddress.ToString();
             User = mailAddress.User;
             Host = mailAddress.Host;
+        }
+
+        private void SplitNameValuesInParts(IEnumerable<string> parts, NameValueCollection parameters)
+        {
+            foreach (var part in parts)
+            {
+                var nameValue = part.Split('=');
+                if (nameValue.Length == 1)
+                {
+                    parameters[nameValue[0]] = "";
+                    continue;
+                }
+                parameters[nameValue[0]] = String.Join("=", nameValue.Skip(1));
+            }
         }
 
         public override string ToString()
