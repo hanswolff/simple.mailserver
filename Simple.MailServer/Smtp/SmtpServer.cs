@@ -1,11 +1,11 @@
 ﻿using Simple.MailServer.Logging;
+using Simple.MailServer.Smtp.Config;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Simple.MailServer.Smtp
@@ -18,11 +18,11 @@ namespace Simple.MailServer.Smtp
         public ConcurrentDictionary<EndPoint, SmtpConnection> Connections { get; protected set; }
         public SmtpServerConfiguration Configuration { get; set; }
 
-        private SmtpResponderFactory _defaultResponderFactory = SmtpResponderFactory.Default;
+        private SmtpResponderFactory _defaultResponderFactory;
         public SmtpResponderFactory DefaultResponderFactory
         {
             get { return _defaultResponderFactory; }
-            set { _defaultResponderFactory = value ?? SmtpResponderFactory.Default; }
+            set { _defaultResponderFactory = value ?? new SmtpResponderFactory(Configuration); }
         }
 
         public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("Client connected from " + args.Connection.RemoteEndPoint);
@@ -39,10 +39,10 @@ namespace Simple.MailServer.Smtp
             Configuration = new SmtpServerConfiguration();
             Watchdog = new IdleConnectionDisconnectWatchdog<SmtpServer>(this);
 
-            UpdateWatchdogOnConfigurationChange();
+            WatchForConfigurationChange();
         }
 
-        private void UpdateWatchdogOnConfigurationChange()
+        private void WatchForConfigurationChange()
         {
             Configuration.ConfigurationChanged +=
                 c =>

@@ -98,7 +98,7 @@ namespace Simple.MailServer.Tests
         {
             public Task<byte[]> ReadLineAsync(CancellationToken cancellationToken)
             {
-                return null;
+                return Task.FromResult((byte[])null);
             }
         }
 

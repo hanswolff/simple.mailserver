@@ -15,10 +15,10 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var testPort = GetTestPort();
             var mailDataCollector = new TestMailDataCollector();
-            var responderFactory = new SmtpResponderFactory { DataResponder = mailDataCollector };
 
             using (var smtpServer = new SmtpServer())
             {
+                var responderFactory = new SmtpResponderFactory(smtpServer.Configuration) { DataResponder = mailDataCollector };
                 smtpServer.DefaultResponderFactory = responderFactory;
                 smtpServer.BindAndListenTo(IPAddress.Loopback, testPort);
 

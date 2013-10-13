@@ -1,20 +1,29 @@
-﻿namespace Simple.MailServer.Smtp
+﻿using Simple.MailServer.Smtp.Config;
+using System;
+
+namespace Simple.MailServer.Smtp
 {
     public class DefaultSmtpDataResponder : IRespondToSmtpData
     {
-        public static readonly DefaultSmtpDataResponder Instance = new DefaultSmtpDataResponder();
+        protected readonly IConfiguredSmtpRestrictions Configuration;
 
-        public SmtpResponse DataStart(SmtpSessionInfo sessionInfo)
+        public DefaultSmtpDataResponder(IConfiguredSmtpRestrictions configuration)
+        {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            Configuration = configuration;
+        }
+
+        public virtual SmtpResponse DataStart(SmtpSessionInfo sessionInfo)
         {
             return SmtpResponse.DataStart;
         }
 
-        public SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf)
+        public virtual SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf)
         {
             return SmtpResponse.None;
         }
 
-        public SmtpResponse DataEnd(SmtpSessionInfo sessionInfo)
+        public virtual SmtpResponse DataEnd(SmtpSessionInfo sessionInfo)
         {
             return SmtpResponse.OK;
         }

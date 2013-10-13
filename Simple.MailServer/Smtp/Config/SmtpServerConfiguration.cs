@@ -1,8 +1,8 @@
 using System;
 
-namespace Simple.MailServer.Smtp
+namespace Simple.MailServer.Smtp.Config
 {
-    public class SmtpServerConfiguration : IObservableServerConfiguration
+    public class SmtpServerConfiguration : IObservableServerConfiguration, IConfiguredSmtpRestrictions
     {
         private string _defaultGreeting = "localhost";
         /// <summary>

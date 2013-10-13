@@ -11,10 +11,11 @@ namespace Simple.MailServer.Smtp
 
         public SmtpSessionInfoResponder(SmtpResponderFactory responderFactory, SmtpSessionInfo sessionInfo)
         {
+            if (responderFactory == null) throw new ArgumentNullException("responderFactory");
             if (sessionInfo == null) throw new ArgumentNullException("sessionInfo");
 
             SessionInfo = sessionInfo;
-            _responderFactory = responderFactory ?? SmtpResponderFactory.Default;
+            _responderFactory = responderFactory;
         }
 
         protected override SmtpResponse ProcessCommandDataStart(string name, string arguments)

@@ -1,8 +1,17 @@
-﻿namespace Simple.MailServer.Smtp
+﻿using Simple.MailServer.Smtp.Config;
+using System;
+
+namespace Simple.MailServer.Smtp
 {
     public class DefaultSmtpVerifyResponder : IRespondToSmtpVerify
     {
-        public static readonly DefaultSmtpVerifyResponder Instance = new DefaultSmtpVerifyResponder();
+        protected readonly IConfiguredSmtpRestrictions Configuration;
+
+        public DefaultSmtpVerifyResponder(IConfiguredSmtpRestrictions configuration)
+        {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            Configuration = configuration;
+        }
 
         public SmtpResponse Verify(SmtpSessionInfo sessionInfo, string arguments)
         {

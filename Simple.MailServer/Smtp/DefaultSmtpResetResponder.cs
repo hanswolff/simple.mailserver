@@ -1,8 +1,17 @@
-﻿namespace Simple.MailServer.Smtp
+﻿using Simple.MailServer.Smtp.Config;
+using System;
+
+namespace Simple.MailServer.Smtp
 {
     public class DefaultSmtpResetResponder : IRespondToSmtpReset
     {
-        public static readonly DefaultSmtpResetResponder Instance = new DefaultSmtpResetResponder();
+        protected readonly IConfiguredSmtpRestrictions Configuration;
+
+        public DefaultSmtpResetResponder(IConfiguredSmtpRestrictions configuration)
+        {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            Configuration = configuration;
+        }
 
         public SmtpResponse Reset(SmtpSessionInfo sessionInfo)
         {

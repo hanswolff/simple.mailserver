@@ -54,6 +54,8 @@
     <Compile Include="Logging\MailServerLogLevel.cs" />
     <Compile Include="RawLineEventArgs.cs" />
     <Compile Include="RequestDisconnectionEventArgs.cs" />
+    <Compile Include="Smtp\Config\IConfigMaxMailMessageSize.cs" />
+    <Compile Include="Smtp\Config\IConfiguredSmtpRestrictions.cs" />
     <Compile Include="Smtp\IRespondToSmtpRawLine.cs" />
     <Compile Include="Smtp\DefaultSmtpRawLineResponder.cs" />
     <Compile Include="Smtp\DefaultSmtpDataResponder.cs" />
@@ -104,7 +106,7 @@
     <Compile Include="ICanDisconnect.cs" />
     <Compile Include="MailAddressWithParameters.cs" />
     <Compile Include="Mime\Rfc5335Decoder.cs" />
-    <Compile Include="Smtp\SmtpServerConfiguration.cs" />
+    <Compile Include="Smtp\Config\SmtpServerConfiguration.cs" />
     <Compile Include="Smtp\SmtpConnection.cs" />
     <Compile Include="ResponseEventArgs.cs" />
     <Compile Include="Smtp\SmtpServer.cs" />
