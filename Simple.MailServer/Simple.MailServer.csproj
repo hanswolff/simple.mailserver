@@ -50,6 +50,8 @@
     <Compile Include="BufferEventArgs.cs" />
     <Compile Include="ClientConnectionEventArgs.cs" />
     <Compile Include="ICanReadLineAsync.cs" />
+    <Compile Include="Logging\MailServerConsoleLogger.cs" />
+    <Compile Include="Logging\MailServerLogLevel.cs" />
     <Compile Include="RawLineEventArgs.cs" />
     <Compile Include="Smtp\IRespondToSmtpRawLine.cs" />
     <Compile Include="Smtp\DefaultSmtpRawLineResponder.cs" />

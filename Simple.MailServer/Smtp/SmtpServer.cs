@@ -118,7 +118,7 @@ namespace Simple.MailServer.Smtp
             {
                 StartWatchdogOnFirstCall();
 
-                var portBinding = CreateNewPortBinding(serverListenAddress, serverPort);
+                var portBinding = CreateNewPortBindingAndStartListen(serverListenAddress, serverPort);
                 Bindings.Add(portBinding);
                 return portBinding;
             }
@@ -130,11 +130,12 @@ namespace Simple.MailServer.Smtp
                 Watchdog.Start();
         }
 
-        private PortListener CreateNewPortBinding(IPAddress serverListenAddress, int serverPort)
+        private PortListener CreateNewPortBindingAndStartListen(IPAddress serverListenAddress, int serverPort)
         {
             var portBinding = new PortListener(serverListenAddress ?? IPAddress.Any, serverPort);
             portBinding.ClientConnected += PortBindingClientConnected;
             portBinding.StartListen();
+            MailServerLogger.Instance.Info(String.Format("Started listening to {0}:{1}", serverListenAddress, serverPort));
             return portBinding;
         }
 

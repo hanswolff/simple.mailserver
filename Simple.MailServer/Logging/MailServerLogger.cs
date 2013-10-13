@@ -2,11 +2,15 @@
 {
     public static class MailServerLogger
     {
-        private static IMailServerLogger _instance = new MailServerDebugLogger();
+        private static IMailServerLogger _instance = new MailServerDebugLogger(MailServerLogLevel.Debug);
         public static IMailServerLogger Instance
         {
             get { return _instance; }
-            set { _instance = value ?? new MailServerDebugLogger(); }
+        }
+
+        public static void Set(IMailServerLogger loggerInstance)
+        {
+            _instance = loggerInstance ?? new MailServerDebugLogger(MailServerLogLevel.Debug);
         }
     }
 }

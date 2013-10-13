@@ -2,11 +2,11 @@
 
 namespace Simple.MailServer.Logging
 {
-    public class MailServerDebugLogger : IMailServerLogger
+    public class MailServerConsoleLogger : IMailServerLogger
     {
         public MailServerLogLevel LogLevel { get; set; }
 
-        public MailServerDebugLogger(MailServerLogLevel logLevel)
+        public MailServerConsoleLogger(MailServerLogLevel logLevel)
         {
             LogLevel = logLevel;
         }
@@ -14,43 +14,43 @@ namespace Simple.MailServer.Logging
         public void Debug(string message)
         {
             if (LogLevel < MailServerLogLevel.Debug) return;
-            
-            System.Diagnostics.Debug.WriteLine("{0}: DEBUG - {1}", GetTimestamp(), message);
+
+            Console.WriteLine("{0}: DEBUG - {1}", GetTimestamp(), message);
         }
 
         public void Info(string message)
         {
             if (LogLevel < MailServerLogLevel.Info) return;
 
-            System.Diagnostics.Debug.WriteLine("{0}: INFO - {1}", GetTimestamp(), message);
+            Console.WriteLine("{0}: INFO - {1}", GetTimestamp(), message);
         }
 
         public void Warn(string message)
         {
             if (LogLevel < MailServerLogLevel.Warn) return;
 
-            System.Diagnostics.Debug.WriteLine("{0}: WARN - {1}", GetTimestamp(), message);
+            Console.WriteLine("{0}: WARN - {1}", GetTimestamp(), message);
         }
 
         public void Error(string message)
         {
             if (LogLevel < MailServerLogLevel.Error) return;
 
-            System.Diagnostics.Debug.WriteLine("{0}: ERROR - {1}", GetTimestamp(), message);
+            Console.WriteLine("{0}: ERROR - {1}", GetTimestamp(), message);
         }
 
         public void Error(Exception ex)
         {
             if (LogLevel < MailServerLogLevel.Error) return;
 
-            System.Diagnostics.Debug.WriteLine("{0}: ERROR - Exception: {1}", GetTimestamp(), ex);
+            Console.WriteLine("{0}: ERROR - Exception: {1}", GetTimestamp(), ex);
         }
 
         public void Error(Exception ex, string message)
         {
             if (LogLevel < MailServerLogLevel.Error) return;
 
-            System.Diagnostics.Debug.WriteLine("{0}: ERROR - {1}, Exception: {2}", GetTimestamp(), message, ex);
+            Console.WriteLine("{0}: ERROR - {1}, Exception: {2}", GetTimestamp(), message, ex);
         }
 
         private string GetTimestamp()
