@@ -3,13 +3,12 @@ using System;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpIdentificationResponder : IRespondToSmtpIdentification
+    public class DefaultSmtpIdentificationResponder<T> : IRespondToSmtpIdentification where T : IConfiguredSmtpRestrictions
     {
-        protected readonly IConfiguredSmtpRestrictions Configuration;
+        protected readonly T Configuration;
 
-        public DefaultSmtpIdentificationResponder(IConfiguredSmtpRestrictions configuration)
+        public DefaultSmtpIdentificationResponder(T configuration)
         {
-            if (configuration == null) throw new ArgumentNullException("configuration");
             Configuration = configuration;
         }
 

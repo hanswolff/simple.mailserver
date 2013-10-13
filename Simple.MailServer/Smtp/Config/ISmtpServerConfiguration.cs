@@ -2,13 +2,13 @@
 
 namespace Simple.MailServer.Smtp.Config
 {
-    public interface IObservableServerConfiguration : IConfiguredSmtpRestrictions
+    public interface ISmtpServerConfiguration : IConfiguredSmtpRestrictions
     {
         string DefaultGreeting { get; set; }
         long GlobalConnectionTimeout { get; set; }
         long ConnectionIdleTimeout { get; set; }
         long MaxNumberOfRecipients { get; set; }
 
-        event Action<IObservableServerConfiguration> ConfigurationChanged;
+        event Action<ISmtpServerConfiguration> ConfigurationChanged;
     }
 }

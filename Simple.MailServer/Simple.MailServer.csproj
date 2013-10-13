@@ -97,7 +97,7 @@
     <Compile Include="IClientConnection.cs" />
     <Compile Include="IHaveConnections.cs" />
     <Compile Include="Logging\IMailServerLogger.cs" />
-    <Compile Include="Smtp\Config\IObservableServerConfiguration.cs" />
+    <Compile Include="Smtp\Config\ISmtpServerConfiguration.cs" />
     <Compile Include="Logging\MailServerLogger.cs" />
     <Compile Include="Mime\StringReaderStream.cs" />
     <Compile Include="Mime\DelimitingReadableStream.cs" />

@@ -1,15 +1,13 @@
 ﻿using Simple.MailServer.Smtp.Config;
-using System;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpDataResponder : IRespondToSmtpData
+    public class DefaultSmtpDataResponder<T> : IRespondToSmtpData where T : IConfiguredSmtpRestrictions
     {
-        protected readonly IConfiguredSmtpRestrictions Configuration;
+        protected readonly T Configuration;
 
-        public DefaultSmtpDataResponder(IConfiguredSmtpRestrictions configuration)
+        public DefaultSmtpDataResponder(T configuration)
         {
-            if (configuration == null) throw new ArgumentNullException("configuration");
             Configuration = configuration;
         }
 

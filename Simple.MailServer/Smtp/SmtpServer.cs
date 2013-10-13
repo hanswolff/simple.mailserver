@@ -16,13 +16,13 @@ namespace Simple.MailServer.Smtp
 
         public ConcurrentBag<PortListener> Bindings { get; protected set; }
         public ConcurrentDictionary<EndPoint, SmtpConnection> Connections { get; protected set; }
-        public SmtpServerConfiguration Configuration { get; set; }
+        public ISmtpServerConfiguration Configuration { get; set; }
 
-        private DefaultSmtpResponderFactory _defaultResponderFactory;
-        public DefaultSmtpResponderFactory DefaultResponderFactory
+        private ISmtpResponderFactory _defaultResponderFactory;
+        public ISmtpResponderFactory DefaultResponderFactory
         {
             get { return _defaultResponderFactory; }
-            set { _defaultResponderFactory = value ?? new DefaultSmtpResponderFactory(Configuration); }
+            set { _defaultResponderFactory = value ?? new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(Configuration); }
         }
 
         public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("Client connected from " + args.Connection.RemoteEndPoint);

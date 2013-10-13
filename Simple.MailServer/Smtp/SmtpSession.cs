@@ -10,7 +10,7 @@ namespace Simple.MailServer.Smtp
 
         public event EventHandler<SmtpSessionEventArgs> OnSessionDisconnected = (s, e) => { };
 
-        public SmtpSession(SmtpConnection connection, DefaultSmtpResponderFactory responderFactory)
+        public SmtpSession(SmtpConnection connection, ISmtpResponderFactory responderFactory)
         {
             if (responderFactory == null) throw new ArgumentNullException("responderFactory");
             Connection = connection;

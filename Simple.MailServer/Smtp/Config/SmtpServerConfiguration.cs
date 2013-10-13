@@ -2,7 +2,7 @@ using System;
 
 namespace Simple.MailServer.Smtp.Config
 {
-    public class SmtpServerConfiguration : IObservableServerConfiguration
+    public class SmtpServerConfiguration : ISmtpServerConfiguration
     {
         private string _defaultGreeting = "localhost";
         /// <summary>
@@ -56,7 +56,7 @@ namespace Simple.MailServer.Smtp.Config
             set { _maxNumberOfRecipients = value; FireConfigurationChanged(); }
         }
 
-        public event Action<IObservableServerConfiguration> ConfigurationChanged = c => { };
+        public event Action<ISmtpServerConfiguration> ConfigurationChanged = c => { };
 
         private void FireConfigurationChanged()
         {

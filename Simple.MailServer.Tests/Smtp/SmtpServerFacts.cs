@@ -1,4 +1,5 @@
 ﻿using Simple.MailServer.Smtp;
+using Simple.MailServer.Smtp.Config;
 using System;
 using System.Net;
 using System.Net.Mail;
@@ -18,7 +19,7 @@ namespace Simple.MailServer.Tests.Smtp
 
             using (var smtpServer = new SmtpServer())
             {
-                var responderFactory = new DefaultSmtpResponderFactory(smtpServer.Configuration) { DataResponder = mailDataCollector };
+                var responderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration) { DataResponder = mailDataCollector };
                 smtpServer.DefaultResponderFactory = responderFactory;
                 smtpServer.BindAndListenTo(IPAddress.Loopback, testPort);
 

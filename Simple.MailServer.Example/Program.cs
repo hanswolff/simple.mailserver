@@ -2,6 +2,7 @@
 using Simple.MailServer.Smtp;
 using System;
 using System.Net;
+using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Example
 {
@@ -24,7 +25,7 @@ namespace Simple.MailServer.Example
         {
             var smtpServer = new SmtpServer();
             smtpServer.Configuration.DefaultGreeting = "Simple.MailServer Example";
-            smtpServer.DefaultResponderFactory = new DefaultSmtpResponderFactory(smtpServer.Configuration)
+            smtpServer.DefaultResponderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration)
             {
                 DataResponder = new ExampleDataResponder(smtpServer.Configuration, RootMailDir)
             };

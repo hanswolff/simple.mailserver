@@ -1,16 +1,16 @@
 ﻿using Simple.MailServer.Smtp;
+using Simple.MailServer.Smtp.Config;
 using System;
 using System.IO;
 using System.Text;
-using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Example
 {
-    class ExampleDataResponder : DefaultSmtpDataResponder
+    class ExampleDataResponder : DefaultSmtpDataResponder<ISmtpServerConfiguration>
     {
         private readonly string _mailDir;
 
-        public ExampleDataResponder(IConfiguredSmtpRestrictions configuration, string mailDir)
+        public ExampleDataResponder(ISmtpServerConfiguration configuration, string mailDir)
             : base(configuration)
         {
             _mailDir = mailDir;
