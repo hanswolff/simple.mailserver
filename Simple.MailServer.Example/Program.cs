@@ -24,7 +24,7 @@ namespace Simple.MailServer.Example
         {
             var smtpServer = new SmtpServer();
             smtpServer.Configuration.DefaultGreeting = "Simple.MailServer Example";
-            smtpServer.DefaultResponderFactory = new SmtpResponderFactory(smtpServer.Configuration)
+            smtpServer.DefaultResponderFactory = new DefaultSmtpResponderFactory(smtpServer.Configuration)
             {
                 DataResponder = new ExampleDataResponder(smtpServer.Configuration, RootMailDir)
             };

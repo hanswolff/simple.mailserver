@@ -430,12 +430,12 @@ namespace Simple.MailServer.Tests.Smtp
         internal static SmtpResponse TestResponseSuccess = new SmtpResponse(200, "");
         internal static SmtpResponse TestResponseError = new SmtpResponse(500, "");
 
-        private static SmtpSessionInfoResponder DefaultResponder(SmtpResponderFactory factory = null)
+        private static SmtpSessionInfoResponder DefaultResponder(DefaultSmtpResponderFactory factory = null)
         {
-            return new SmtpSessionInfoResponder(factory ?? new SmtpResponderFactory(new SmtpServerConfiguration()), new SmtpSessionInfo());
+            return new SmtpSessionInfoResponder(factory ?? new DefaultSmtpResponderFactory(new SmtpServerConfiguration()), new SmtpSessionInfo());
         }
 
-        private static SmtpSessionInfoResponder IdentifiedParseResponder(SmtpResponderFactory factory = null)
+        private static SmtpSessionInfoResponder IdentifiedParseResponder(DefaultSmtpResponderFactory factory = null)
         {
             var parseResponder = DefaultResponder(factory);
             parseResponder.SessionInfo.Identification.Mode = SmtpIdentificationMode.HELO;
@@ -443,14 +443,14 @@ namespace Simple.MailServer.Tests.Smtp
             return parseResponder;
         }
 
-        private static SmtpSessionInfoResponder MailFromIdentifiedParseResponder(SmtpResponderFactory factory = null)
+        private static SmtpSessionInfoResponder MailFromIdentifiedParseResponder(DefaultSmtpResponderFactory factory = null)
         {
             var parseResponder = IdentifiedParseResponder(factory);
             parseResponder.SessionInfo.MailFrom = MailAddressWithParameters.Parse("test@localhost");
             return parseResponder;
         }
 
-        private static SmtpSessionInfoResponder RecipientMailFromIdentifiedParseResponder(SmtpResponderFactory factory = null)
+        private static SmtpSessionInfoResponder RecipientMailFromIdentifiedParseResponder(DefaultSmtpResponderFactory factory = null)
         {
             var parseResponder = MailFromIdentifiedParseResponder(factory);
             parseResponder.SessionInfo.Recipients.Add(MailAddressWithParameters.Parse("test@localhost"));
@@ -468,7 +468,7 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var respondToSmtpData = MockIRespondToSmtpDataToReturnResponse(testResponse);
 
-            var factory = new SmtpResponderFactory(new SmtpServerConfiguration()) { DataResponder = respondToSmtpData };
+            var factory = new DefaultSmtpResponderFactory(new SmtpServerConfiguration()) { DataResponder = respondToSmtpData };
             var parseResponder = RecipientMailFromIdentifiedParseResponder(factory);
             return parseResponder;
         }
@@ -492,7 +492,7 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var respondToSmtpIdentification = MockIRespondToSmtpIdentificationToReturnResponse(testResponse);
 
-            var factory = new SmtpResponderFactory(new SmtpServerConfiguration()) { IdentificationResponder = respondToSmtpIdentification };
+            var factory = new DefaultSmtpResponderFactory(new SmtpServerConfiguration()) { IdentificationResponder = respondToSmtpIdentification };
             var parseResponder = DefaultResponder(factory);
             return parseResponder;
         }
@@ -510,7 +510,7 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var respondToMailFrom = MockIRespondToMailFromToReturnResponse(testResponse);
 
-            var factory = new SmtpResponderFactory(new SmtpServerConfiguration()) { MailFromResponder = respondToMailFrom };
+            var factory = new DefaultSmtpResponderFactory(new SmtpServerConfiguration()) { MailFromResponder = respondToMailFrom };
             var parseResponder = IdentifiedParseResponder(factory);
             return parseResponder;
         }
@@ -528,7 +528,7 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var respondToRecipientTo = MockIRespondToRecipientToToReturnResponse(testResponse);
 
-            var factory = new SmtpResponderFactory(new SmtpServerConfiguration()) { RecipientToResponder = respondToRecipientTo };
+            var factory = new DefaultSmtpResponderFactory(new SmtpServerConfiguration()) { RecipientToResponder = respondToRecipientTo };
             var parseResponder = MailFromIdentifiedParseResponder(factory);
             return parseResponder;
         }
@@ -546,7 +546,7 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var respondToVerify = MockIRespondToVerifyToReturnResponse(testResponse);
 
-            var factory = new SmtpResponderFactory(new SmtpServerConfiguration()) { VerifyResponder = respondToVerify };
+            var factory = new DefaultSmtpResponderFactory(new SmtpServerConfiguration()) { VerifyResponder = respondToVerify };
             var parseResponder = MailFromIdentifiedParseResponder(factory);
             return parseResponder;
         }

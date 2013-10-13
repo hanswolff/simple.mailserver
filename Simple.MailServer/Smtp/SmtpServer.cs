@@ -18,11 +18,11 @@ namespace Simple.MailServer.Smtp
         public ConcurrentDictionary<EndPoint, SmtpConnection> Connections { get; protected set; }
         public SmtpServerConfiguration Configuration { get; set; }
 
-        private SmtpResponderFactory _defaultResponderFactory;
-        public SmtpResponderFactory DefaultResponderFactory
+        private DefaultSmtpResponderFactory _defaultResponderFactory;
+        public DefaultSmtpResponderFactory DefaultResponderFactory
         {
             get { return _defaultResponderFactory; }
-            set { _defaultResponderFactory = value ?? new SmtpResponderFactory(Configuration); }
+            set { _defaultResponderFactory = value ?? new DefaultSmtpResponderFactory(Configuration); }
         }
 
         public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("Client connected from " + args.Connection.RemoteEndPoint);

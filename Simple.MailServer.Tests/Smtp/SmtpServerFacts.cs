@@ -18,7 +18,7 @@ namespace Simple.MailServer.Tests.Smtp
 
             using (var smtpServer = new SmtpServer())
             {
-                var responderFactory = new SmtpResponderFactory(smtpServer.Configuration) { DataResponder = mailDataCollector };
+                var responderFactory = new DefaultSmtpResponderFactory(smtpServer.Configuration) { DataResponder = mailDataCollector };
                 smtpServer.DefaultResponderFactory = responderFactory;
                 smtpServer.BindAndListenTo(IPAddress.Loopback, testPort);
 

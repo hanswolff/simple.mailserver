@@ -5,12 +5,12 @@ namespace Simple.MailServer.Smtp
     public class SmtpSession : BaseSession
     {
         public SmtpConnection Connection { get; private set; }
-        public SmtpResponderFactory ResponderFactory { get; set; }
+        public DefaultSmtpResponderFactory ResponderFactory { get; set; }
         public SmtpSessionInfo SessionInfo { get; set; }
 
         public event EventHandler<SmtpSessionEventArgs> OnSessionDisconnected = (s, e) => { };
 
-        public SmtpSession(SmtpConnection connection, SmtpResponderFactory responderFactory)
+        public SmtpSession(SmtpConnection connection, DefaultSmtpResponderFactory responderFactory)
         {
             if (responderFactory == null) throw new ArgumentNullException("responderFactory");
             Connection = connection;

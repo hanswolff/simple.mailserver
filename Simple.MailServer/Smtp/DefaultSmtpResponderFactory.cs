@@ -3,11 +3,11 @@ using System;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpResponderFactory
+    public class DefaultSmtpResponderFactory
     {
         private readonly IConfiguredSmtpRestrictions _configuration;
 
-        public SmtpResponderFactory(IConfiguredSmtpRestrictions configuration)
+        public DefaultSmtpResponderFactory(IConfiguredSmtpRestrictions configuration)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
             _configuration = configuration;

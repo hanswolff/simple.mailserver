@@ -72,7 +72,7 @@
     <Compile Include="Smtp\IRespondToSmtpMailFrom.cs" />
     <Compile Include="Smtp\SmtpCommandParser.cs" />
     <Compile Include="RawLineDecoder.cs" />
-    <Compile Include="Smtp\SmtpResponderFactory.cs" />
+    <Compile Include="Smtp\DefaultSmtpResponderFactory.cs" />
     <Compile Include="Smtp\SmtpResponse.cs" />
     <Compile Include="Smtp\SmtpSessionEventArgs.cs" />
     <Compile Include="Smtp\SmtpConnectionEventArgs.cs" />
