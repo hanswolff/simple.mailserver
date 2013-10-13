@@ -17,6 +17,6 @@ Simple SMTP Mail Server in C# 5 (using async features)
 
 # Contact
 
-Please let me know if there is bugs or suggestions how to improve the code.
+Please let me know if there are bugs or if you have suggestions how to improve the code.
 
 And maybe follow me [@quadfinity](https://twitter.com/quadfinity) :)
