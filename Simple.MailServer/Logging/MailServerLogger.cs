@@ -10,7 +10,7 @@
 
         public static void Set(IMailServerLogger loggerInstance)
         {
-            _instance = loggerInstance ?? new MailServerDebugLogger(MailServerLogLevel.Debug);
+            _instance = loggerInstance ?? new MailServerNullLogger();
         }
     }
 }

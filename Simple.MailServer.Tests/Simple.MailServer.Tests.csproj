@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdleConnectionDisconnectorWatchdogFacts.cs" />
+    <Compile Include="Logging\MailServerLoggerFacts.cs" />
     <Compile Include="MailAddressWithParametersFacts.cs" />
     <Compile Include="Mime\DateTimeRfc2822Facts.cs" />
     <Compile Include="Mime\QuotedPrintableDecoderStreamFacts.cs" />
