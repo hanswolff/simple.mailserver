@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Simple.MailServer.Mime;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Simple.MailServer.Mime;
 
 namespace Simple.MailServer
 {
@@ -16,6 +15,8 @@ namespace Simple.MailServer
         public PortListener PortBinding { get; protected set; }
         public TcpClient TcpClient { get; protected set; }
         public DateTime ConnectionInitiated { get; protected set; }
+
+        public IPEndPoint RemoteEndpoint { get; protected set; }
 
         protected StringReaderStream Reader;
         protected StreamWriter Writer;
@@ -30,6 +31,7 @@ namespace Simple.MailServer
 
             PortBinding = portBinding;
             TcpClient = tcpClient;
+            RemoteEndPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
 
             ConnectionInitiated = DateTime.UtcNow;
             NetworkStream = tcpClient.GetStream();

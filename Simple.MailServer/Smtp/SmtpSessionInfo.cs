@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Simple.MailServer.Smtp
 {
@@ -10,8 +11,12 @@ namespace Simple.MailServer.Smtp
         public List<MailAddressWithParameters> Recipients { get; private set; }
         public object Tag { get; set; }
 
+        public DateTime CreatedTimestamp { get; private set; }
+
         public SmtpSessionInfo()
         {
+            CreatedTimestamp = DateTime.UtcNow;
+
             Identification = new SmtpIdentification();
             Recipients = new List<MailAddressWithParameters>();
         }

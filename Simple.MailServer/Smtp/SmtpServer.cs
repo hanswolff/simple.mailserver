@@ -191,10 +191,10 @@ namespace Simple.MailServer.Smtp
 
         private static async Task SendResponseAsync(SmtpConnection connection, SmtpResponse response)
         {
-            foreach (var additional in response.Additional)
+            foreach (var additional in response.AdditionalLines)
                 await connection.WriteLineAsyncAndFireEvents(additional);
 
-            await connection.WriteLineAsyncAndFireEvents(response.ReasonCode + " " + response.ReasonText);
+            await connection.WriteLineAsyncAndFireEvents(response.ResponseCode + " " + response.ResponseText);
         }
 
 

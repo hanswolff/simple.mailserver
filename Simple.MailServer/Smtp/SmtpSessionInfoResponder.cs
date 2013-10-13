@@ -32,6 +32,7 @@ namespace Simple.MailServer.Smtp
             if (response.Success)
             {
                 InDataMode = true;
+                SessionInfo.HasData = true;
             }
 
             return response;

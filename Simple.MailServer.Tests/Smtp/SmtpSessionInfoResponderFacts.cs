@@ -60,7 +60,7 @@ namespace Simple.MailServer.Tests.Smtp
             var parseResponder = RecipientMailFromIdentifiedParseResponder();
             var response = SendCommand(parseResponder, "DATA");
 
-            Assert.Equal(354, response.ReasonCode);
+            Assert.Equal(354, response.ResponseCode);
             Assert.True(parseResponder.InDataMode);
         }
 
