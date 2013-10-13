@@ -4,6 +4,8 @@ namespace Simple.MailServer.Logging
 {
     public interface IMailServerLogger
     {
+        MailServerLogLevel LogLevel { get; }
+
         void Debug(string message);
         void Info(string message);
         void Warn(string message);

@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,11 +25,10 @@ namespace Simple.MailServer.Smtp
             set { _defaultResponderFactory = value ?? SmtpResponderFactory.Default; }
         }
 
-        public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("ClientConnected: " + args.Connection.RemoteEndPoint);
-        public event EventHandler<SmtpConnectionEventArgs> ClientDisconnected = (sender, args) => MailServerLogger.Instance.Info("ClientDisconnected: " + args.Connection.RemoteEndPoint);
-        public event EventHandler<SmtpSessionEventArgs> SessionCreated = (sender, args) => MailServerLogger.Instance.Info("SessionCreated: " + args.Session.Connection.RemoteEndPoint);
-
-        public event EventHandler<SmtpSessionEventArgs> GreetingSent = (sender, args) => MailServerLogger.Instance.Info("GreetingSent");
+        public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("Client connected from " + args.Connection.RemoteEndPoint);
+        public event EventHandler<SmtpConnectionEventArgs> ClientDisconnected = (sender, args) => MailServerLogger.Instance.Info("Client disconnected from " + args.Connection.RemoteEndPoint);
+        public event EventHandler<SmtpSessionEventArgs> SessionCreated = (sender, args) => MailServerLogger.Instance.Debug("Session created for " + args.Session.Connection.RemoteEndPoint);
+        public event EventHandler<SmtpSessionEventArgs> GreetingSent = (sender, args) => MailServerLogger.Instance.Debug("Greeting sent to " + args.Session.Connection.RemoteEndPoint);
 
         public IdleConnectionDisconnectWatchdog<SmtpServer> Watchdog { get; private set; }
 
@@ -162,12 +162,15 @@ namespace Simple.MailServer.Smtp
 
             var sessionInfoParseResponder = new SmtpSessionInfoResponder(session.ResponderFactory, session.SessionInfo);
 
-            var cts = new CancellationTokenSource();
-
             var rawLineDecoder = new RawLineDecoder(connection);
             rawLineDecoder.RequestDisconnection += (s, e) =>
             {
-                cts.Cancel();
+                if (!e.DisconnectionExpected)
+                {
+                    MailServerLogger.Instance.Warn(String.Format("Connection unexpectedly lost {0}", connection.RemoteEndPoint));
+                }
+
+                rawLineDecoder.Cancel();
                 session.Disconnect();
             };
             rawLineDecoder.DetectedActivity += (s, e) => session.UpdateActivity();
@@ -179,7 +182,9 @@ namespace Simple.MailServer.Smtp
                 if (response == SmtpResponse.Disconnect)
                 {
                     await SendResponseAsync(connection, response);
-                    cts.Cancel();
+
+                    MailServerLogger.Instance.Debug(String.Format("Remote connection disconnected {0}", connection.RemoteEndPoint));
+                    rawLineDecoder.Cancel();
                     session.Disconnect();
                     return;
                 }
@@ -187,17 +192,29 @@ namespace Simple.MailServer.Smtp
                 await SendResponseAsync(connection, response);
             };
 
-            rawLineDecoder.ProcessCommandsAsync(cts.Token);
+            rawLineDecoder.ProcessCommandsAsync();
         }
 
         private static async Task SendResponseAsync(SmtpConnection connection, SmtpResponse response)
         {
+            LogResponse(response);
+
             foreach (var additional in response.AdditionalLines)
                 await connection.WriteLineAsyncAndFireEvents(additional);
 
             await connection.WriteLineAsyncAndFireEvents(response.ResponseCode + " " + response.ResponseText);
         }
 
+        private static void LogResponse(SmtpResponse response)
+        {
+            var logger = MailServerLogger.Instance;
+            if (logger.LogLevel < MailServerLogLevel.Debug) return;
+
+            var logMessage = new StringBuilder();
+            response.AdditionalLines.ForEach(additionalLine => logMessage.Append(">>> " + additionalLine));
+            logMessage.Append(">>> " + response.ResponseCode + " " + response.ResponseText);
+            logger.Debug(logMessage.ToString());
+        }
 
         private SmtpSession CreateSession(SmtpConnection connection)
         {
@@ -214,7 +231,10 @@ namespace Simple.MailServer.Smtp
         {
             if (connectionToSendGreetingTo == null) throw new ArgumentNullException("connectionToSendGreetingTo");
 
-            await connectionToSendGreetingTo.WriteLineAsyncAndFireEvents("220 " + greeting);
+            var greetingLine = "220 " + greeting;
+
+            MailServerLogger.Instance.Debug(">>> " + greetingLine);
+            await connectionToSendGreetingTo.WriteLineAsyncAndFireEvents(greetingLine);
             GreetingSent(this, new SmtpSessionEventArgs(connectionToSendGreetingTo.Session));
         }
     }

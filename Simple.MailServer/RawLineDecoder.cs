@@ -13,23 +13,25 @@ namespace Simple.MailServer
 
         public event EventHandler DetectedActivity = (s, e) => { };
         public event EventHandler<BufferEventArgs> ProcessLineCommand = (s, e) => { };
-        public event EventHandler RequestDisconnection = (s, e) => { };
+        public event EventHandler<RequestDisconnectionEventArgs> RequestDisconnection = (s, e) => { };
 
         public RawLineDecoder(ICanReadLineAsync readLineSource)
         {
             _readLineSource = readLineSource;
         }
 
-        public async Task ProcessCommandsAsync()
+        private CancellationTokenSource _cts = new CancellationTokenSource();
+        public void Cancel()
         {
-            await ProcessCommandsAsync(CancellationToken.None);
+            _cts.Cancel();
         }
 
-        public async Task ProcessCommandsAsync(CancellationToken cancellationToken)
+        public async Task ProcessCommandsAsync()
         {
+            var cancellationToken = _cts.Token;
             try
             {
-                while (!cancellationToken.IsCancellationRequested)
+                while (!_cts.IsCancellationRequested)
                 {
                     byte[] line;
                     try
@@ -37,13 +39,13 @@ namespace Simple.MailServer
                         line = await _readLineSource.ReadLineAsync(cancellationToken);
                         if (line == null)
                         {
-                            RequestDisconnection(this, EventArgs.Empty);
+                            RequestDisconnection(this, RequestDisconnectionEventArgs.Expected);
                             return;
                         }
                     }
                     catch (IOException)
                     {
-                        RequestDisconnection(this, EventArgs.Empty);
+                        RequestDisconnection(this, RequestDisconnectionEventArgs.Unexpected);
                         return;
                     }
                     catch (ObjectDisposedException)
@@ -61,7 +63,11 @@ namespace Simple.MailServer
             catch (Exception ex)
             {
                 MailServerLogger.Instance.Error(ex);
-                RequestDisconnection(this, EventArgs.Empty);
+                RequestDisconnection(this, RequestDisconnectionEventArgs.Unexpected);
+            }
+            finally
+            {
+                _cts = new CancellationTokenSource();
             }
         }
     }

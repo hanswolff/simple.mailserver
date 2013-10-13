@@ -16,8 +16,6 @@ namespace Simple.MailServer
         public TcpClient TcpClient { get; protected set; }
         public DateTime ConnectionInitiated { get; protected set; }
 
-        public IPEndPoint RemoteEndpoint { get; protected set; }
-
         protected StringReaderStream Reader;
         protected StreamWriter Writer;
 
@@ -31,7 +29,6 @@ namespace Simple.MailServer
 
             PortBinding = portBinding;
             TcpClient = tcpClient;
-            RemoteEndPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
 
             ConnectionInitiated = DateTime.UtcNow;
             NetworkStream = tcpClient.GetStream();

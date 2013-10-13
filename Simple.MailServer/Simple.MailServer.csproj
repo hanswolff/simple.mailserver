@@ -53,6 +53,7 @@
     <Compile Include="Logging\MailServerConsoleLogger.cs" />
     <Compile Include="Logging\MailServerLogLevel.cs" />
     <Compile Include="RawLineEventArgs.cs" />
+    <Compile Include="RequestDisconnectionEventArgs.cs" />
     <Compile Include="Smtp\IRespondToSmtpRawLine.cs" />
     <Compile Include="Smtp\DefaultSmtpRawLineResponder.cs" />
     <Compile Include="Smtp\DefaultSmtpDataResponder.cs" />

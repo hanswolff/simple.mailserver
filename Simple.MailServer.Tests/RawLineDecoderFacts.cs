@@ -14,15 +14,13 @@ namespace Simple.MailServer.Tests
             var readLineAsyncSource = new ReadLineAsyncAlwaysNull();
             var rawLineDecoder = new RawLineDecoder(readLineAsyncSource);
 
-            var cts = new CancellationTokenSource();
-            cts.CancelAfter(100);
-
             var disconnectRequested = false;
-            rawLineDecoder.RequestDisconnection += (s, e) => { disconnectRequested = true; cts.Cancel(); };
+            rawLineDecoder.RequestDisconnection += (s, e) => { disconnectRequested = true; rawLineDecoder.Cancel(); };
             var processLineCommand = false;
             rawLineDecoder.ProcessLineCommand += (s, l) => processLineCommand = true;
 
-            rawLineDecoder.ProcessCommandsAsync(cts.Token).Wait(100);
+            rawLineDecoder.ProcessCommandsAsync().Wait(100);
+            rawLineDecoder.Cancel();
 
             Assert.True(disconnectRequested);
             Assert.False(processLineCommand);
@@ -34,13 +32,11 @@ namespace Simple.MailServer.Tests
             var readLineAsyncSource = new ReadLineAsyncThrowIOException();
             var rawLineDecoder = new RawLineDecoder(readLineAsyncSource);
 
-            var cts = new CancellationTokenSource();
-            cts.CancelAfter(100);
-
             var disconnectRequested = false;
-            rawLineDecoder.RequestDisconnection += (s, e) => { disconnectRequested = true; cts.Cancel(); };
+            rawLineDecoder.RequestDisconnection += (s, e) => { disconnectRequested = true; rawLineDecoder.Cancel(); };
 
-            rawLineDecoder.ProcessCommandsAsync(cts.Token).Wait(100);
+            rawLineDecoder.ProcessCommandsAsync().Wait(100);
+            rawLineDecoder.Cancel();
 
             Assert.True(disconnectRequested);
         }
@@ -55,9 +51,10 @@ namespace Simple.MailServer.Tests
             cts.CancelAfter(100);
 
             var detectedActivity = false;
-            rawLineDecoder.DetectedActivity += (s, e) => { detectedActivity = true; cts.Cancel(); };
+            rawLineDecoder.DetectedActivity += (s, e) => { detectedActivity = true; rawLineDecoder.Cancel(); };
 
-            rawLineDecoder.ProcessCommandsAsync(cts.Token).Wait(100);
+            rawLineDecoder.ProcessCommandsAsync().Wait(100);
+            rawLineDecoder.Cancel();
 
             Assert.True(detectedActivity);
         }
@@ -72,9 +69,10 @@ namespace Simple.MailServer.Tests
             cts.CancelAfter(100);
 
             byte[] processLineCommand = null;
-            rawLineDecoder.ProcessLineCommand += (s, e) => { processLineCommand = e.Buffer; cts.Cancel(); };
+            rawLineDecoder.ProcessLineCommand += (s, e) => { processLineCommand = e.Buffer; rawLineDecoder.Cancel(); };
 
-            rawLineDecoder.ProcessCommandsAsync(cts.Token).Wait(100);
+            rawLineDecoder.ProcessCommandsAsync().Wait(100);
+            rawLineDecoder.Cancel();
 
             Assert.Equal("command", Encoding.Default.GetString(processLineCommand));
         }
@@ -88,9 +86,8 @@ namespace Simple.MailServer.Tests
             byte[] processLineCommand = null;
             rawLineDecoder.ProcessLineCommand += (s, e) => processLineCommand = e.Buffer;
 
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-            rawLineDecoder.ProcessCommandsAsync(cts.Token).Wait(100);
+            rawLineDecoder.Cancel();
+            rawLineDecoder.ProcessCommandsAsync().Wait(100);
 
             Assert.Null(processLineCommand);
         }

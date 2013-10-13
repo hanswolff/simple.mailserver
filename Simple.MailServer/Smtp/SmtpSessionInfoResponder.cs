@@ -1,4 +1,5 @@
 ﻿using System;
+using Simple.MailServer.Logging;
 
 namespace Simple.MailServer.Smtp
 {
@@ -185,12 +186,16 @@ namespace Simple.MailServer.Smtp
 
         protected override SmtpResponse ProcessRawLine(string line)
         {
+            MailServerLogger.Instance.Debug("<<< " + line);
+
             var response = _responderFactory.RawLineResponder.RawLine(SessionInfo, line);
             return response;
         }
 
         protected override SmtpResponse ProcessCommandDataEnd()
         {
+            MailServerLogger.Instance.Debug("DataEnd received"); 
+            
             var response = _responderFactory.DataResponder.DataEnd(SessionInfo);
             if (response.Success)
             {

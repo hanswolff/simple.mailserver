@@ -4,6 +4,11 @@ namespace Simple.MailServer.Logging
 {
     public class MailServerNullLogger : IMailServerLogger
     {
+        public MailServerLogLevel LogLevel
+        {
+            get { return MailServerLogLevel.None; }
+        }
+
         public void Debug(string message)
         {
         }
