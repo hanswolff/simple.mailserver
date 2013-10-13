@@ -7,9 +7,9 @@ namespace Simple.MailServer.Smtp
     {
         public SmtpSessionInfo SessionInfo { get; private set; }
         
-        private readonly DefaultSmtpResponderFactory _responderFactory;
+        private readonly ISmtpResponderFactory _responderFactory;
 
-        public SmtpSessionInfoResponder(DefaultSmtpResponderFactory responderFactory, SmtpSessionInfo sessionInfo)
+        public SmtpSessionInfoResponder(ISmtpResponderFactory responderFactory, SmtpSessionInfo sessionInfo)
         {
             if (responderFactory == null) throw new ArgumentNullException("responderFactory");
             if (sessionInfo == null) throw new ArgumentNullException("sessionInfo");

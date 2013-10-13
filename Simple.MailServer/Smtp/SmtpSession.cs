@@ -5,7 +5,7 @@ namespace Simple.MailServer.Smtp
     public class SmtpSession : BaseSession
     {
         public SmtpConnection Connection { get; private set; }
-        public DefaultSmtpResponderFactory ResponderFactory { get; set; }
+        public ISmtpResponderFactory ResponderFactory { get; set; }
         public SmtpSessionInfo SessionInfo { get; set; }
 
         public event EventHandler<SmtpSessionEventArgs> OnSessionDisconnected = (s, e) => { };

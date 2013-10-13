@@ -3,7 +3,7 @@ using System;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpResponderFactory
+    public class DefaultSmtpResponderFactory : ISmtpResponderFactory
     {
         private readonly IConfiguredSmtpRestrictions _configuration;
 

@@ -56,6 +56,7 @@
     <Compile Include="RequestDisconnectionEventArgs.cs" />
     <Compile Include="Smtp\Config\IConfigMaxMailMessageSize.cs" />
     <Compile Include="Smtp\Config\IConfiguredSmtpRestrictions.cs" />
+    <Compile Include="Smtp\ISmtpResponderFactory.cs" />
     <Compile Include="Smtp\IRespondToSmtpRawLine.cs" />
     <Compile Include="Smtp\DefaultSmtpRawLineResponder.cs" />
     <Compile Include="Smtp\DefaultSmtpDataResponder.cs" />
