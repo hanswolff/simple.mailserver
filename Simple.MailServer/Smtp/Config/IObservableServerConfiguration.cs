@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Simple.MailServer
+namespace Simple.MailServer.Smtp.Config
 {
-    public interface IObservableServerConfiguration
+    public interface IObservableServerConfiguration : IConfiguredSmtpRestrictions
     {
         string DefaultGreeting { get; set; }
         long GlobalConnectionTimeout { get; set; }
