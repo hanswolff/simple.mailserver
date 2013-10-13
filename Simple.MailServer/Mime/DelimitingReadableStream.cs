@@ -32,7 +32,7 @@ namespace Simple.MailServer.Mime
 
         public override bool CanWrite
         {
-            get { return BaseStream.CanWrite; }
+            get { return false; }
         }
 
         public override long Length

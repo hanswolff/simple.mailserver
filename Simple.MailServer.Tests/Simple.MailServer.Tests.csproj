@@ -52,6 +52,7 @@
     <Compile Include="Logging\MailServerLoggerFacts.cs" />
     <Compile Include="MailAddressWithParametersFacts.cs" />
     <Compile Include="Mime\DateTimeRfc2822Facts.cs" />
+    <Compile Include="Mime\DelimitingReadableStreamFacts.cs" />
     <Compile Include="Mime\QuotedPrintableDecoderStreamFacts.cs" />
     <Compile Include="Mime\QuotedPrintableEncoderStreamFacts.cs" />
     <Compile Include="Mime\StringReaderStreamFacts.cs" />
