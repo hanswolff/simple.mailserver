@@ -211,8 +211,8 @@ namespace Simple.MailServer.Smtp
             if (logger.LogLevel < MailServerLogLevel.Debug) return;
 
             var logMessage = new StringBuilder();
-            response.AdditionalLines.ForEach(additionalLine => logMessage.Append(">>> " + additionalLine));
-            logMessage.Append(">>> " + response.ResponseCode + " " + response.ResponseText);
+            response.AdditionalLines.ForEach(additionalLine => logMessage.AppendLine(">>> " + additionalLine));
+            logMessage.AppendLine(">>> " + response.ResponseCode + " " + response.ResponseText);
             logger.Debug(logMessage.ToString());
         }
 
