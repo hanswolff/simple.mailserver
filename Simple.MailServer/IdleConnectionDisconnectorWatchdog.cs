@@ -65,6 +65,8 @@ namespace Simple.MailServer
 
         public void TimerCall()
         {
+            if (_timer == null) return;
+
             var connections = Server.GetConnections().ToList();
 
             var connectionTimeout = ConnectionTimeoutMilliseconds;

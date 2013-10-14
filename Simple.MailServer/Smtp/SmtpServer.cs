@@ -176,6 +176,7 @@ namespace Simple.MailServer.Smtp
             rawLineDecoder.DetectedActivity += (s, e) => session.UpdateActivity();
             rawLineDecoder.ProcessLineCommand += async (s, e) =>
             {
+                // ReSharper disable PossibleUnintendedReferenceComparison
                 var response = sessionInfoParseResponder.ProcessLineCommand(e.Buffer);
                 if (response == SmtpResponse.None) return;
 
@@ -188,11 +189,14 @@ namespace Simple.MailServer.Smtp
                     session.Disconnect();
                     return;
                 }
+                // ReSharper restore PossibleUnintendedReferenceComparison
 
                 await SendResponseAsync(connection, response);
             };
 
+#pragma warning disable 4014
             rawLineDecoder.ProcessCommandsAsync();
+#pragma warning restore 4014
         }
 
         private static async Task SendResponseAsync(SmtpConnection connection, SmtpResponse response)

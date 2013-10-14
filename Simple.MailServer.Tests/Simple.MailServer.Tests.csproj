@@ -48,6 +48,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseSessionFacts.cs" />
     <Compile Include="IdleConnectionDisconnectorWatchdogFacts.cs" />
     <Compile Include="Logging\MailServerLoggerFacts.cs" />
     <Compile Include="MailAddressWithParametersFacts.cs" />

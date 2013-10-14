@@ -12,28 +12,34 @@ namespace Simple.MailServer.Tests
         public void watchdog_should_not_disconnect_if_idle_timeout_not_reached()
         {
             var server = new ServerConnectionsStub();
-            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
-            {
-                Interval = 1,
-                IdleTimeoutMilliseconds = 1
-            };
+            var watchdog = StartWatchdogWithIdleTimeout(server, 1);
 
             var connection = CreateMockedConnectionWithIdleTime(0);
-            connection.Setup(x => x.Disconnect()).Throws(new Exception("RequestDisconnection shouldn't be called"));
             server.Connections.Add(connection.Object);
 
             watchdog.TimerCall();
+            connection.Verify(x => x.Disconnect(), Times.Never);
+        }
+
+        [Fact]
+        public void watchdog_should_be_able_to_Stop()
+        {
+            var server = new ServerConnectionsStub();
+            var watchdog = StartWatchdogWithIdleTimeout(server, 1);
+            watchdog.Stop();
+
+            var connection = CreateMockedConnectionWithIdleTime(1);
+            server.Connections.Add(connection.Object);
+
+            watchdog.TimerCall();
+            connection.Verify(x => x.Disconnect(), Times.Never);
         }
 
         [Fact(Timeout = 1000)]
         public void watchdog_should_disconnect_if_idle_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
-            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
-            {
-                Interval = 1,
-                IdleTimeoutMilliseconds = 1
-            };
+            var watchdog = StartWatchdogWithIdleTimeout(server, 1);
 
             var connection = CreateMockedConnectionWithIdleTime(1);
             server.Connections.Add(connection.Object);
@@ -46,11 +52,7 @@ namespace Simple.MailServer.Tests
         public void watchdog_should_fire_TerminateConnection_if_idle_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
-            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
-            {
-                Interval = 1,
-                IdleTimeoutMilliseconds = 1
-            };
+            var watchdog = StartWatchdogWithIdleTimeout(server, 1);
             bool terminatingConnection = false;
             watchdog.TerminatingConnection += (s, e) => terminatingConnection = true;
 
@@ -65,11 +67,7 @@ namespace Simple.MailServer.Tests
         public void watchdog_should_disconnect_if_connection_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
-            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
-            {
-                Interval = 1,
-                ConnectionTimeoutMilliseconds = 1
-            };
+            var watchdog = StartWatchdogWithConnectionTimeout(server, 1);
 
             var connection = CreateMockedConnectionWithIdleTime(0);
             server.Connections.Add(connection.Object);
@@ -83,11 +81,7 @@ namespace Simple.MailServer.Tests
         public void watchdog_should_fire_TerminateConnection_if_connection_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
-            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
-            {
-                Interval = 1,
-                ConnectionTimeoutMilliseconds = 1
-            };
+            var watchdog = StartWatchdogWithConnectionTimeout(server, 1);
             bool terminatingConnection = false;
             watchdog.TerminatingConnection += (s, e) => terminatingConnection = true;
 
@@ -103,20 +97,37 @@ namespace Simple.MailServer.Tests
         public void watchdog_should_not_disconnect_if_connection_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
-            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
-            {
-                Interval = 1,
-                ConnectionTimeoutMilliseconds = 1000
-            };
+            var watchdog = StartWatchdogWithIdleTimeout(server, 1000);
 
             var connection = CreateMockedConnectionWithIdleTime(0);
             connection.Setup(x => x.Disconnect()).Throws(new Exception("RequestDisconnection shouldn't be called"));
             server.Connections.Add(connection.Object);
-
             watchdog.TimerCall();
         }
 
         #region Helpers
+
+        private static IdleConnectionDisconnectWatchdog<ServerConnectionsStub> StartWatchdogWithIdleTimeout(ServerConnectionsStub server, long idleTimeoutMillis)
+        {
+            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
+            {
+                Interval = 1,
+                IdleTimeoutMilliseconds = idleTimeoutMillis
+            };
+            watchdog.Start();
+            return watchdog;
+        }
+
+        private static IdleConnectionDisconnectWatchdog<ServerConnectionsStub> StartWatchdogWithConnectionTimeout(ServerConnectionsStub server, long connectionTimeoutMillis)
+        {
+            var watchdog = new IdleConnectionDisconnectWatchdog<ServerConnectionsStub>(server)
+            {
+                Interval = 1,
+                ConnectionTimeoutMilliseconds = connectionTimeoutMillis
+            };
+            watchdog.Start();
+            return watchdog;
+        }
 
         private static Mock<IClientConnection> CreateMockedConnectionWithIdleTime(int idleTimeMillis)
         {

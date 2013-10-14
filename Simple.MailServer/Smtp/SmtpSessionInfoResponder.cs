@@ -20,6 +20,7 @@ namespace Simple.MailServer.Smtp
 
         protected override SmtpResponse ProcessCommandDataStart(string name, string arguments)
         {
+            // ReSharper disable PossibleUnintendedReferenceComparison
             var notIdentified = CreateResponseIfNotIdentified();
             if (notIdentified != SmtpResponse.None) return notIdentified;
 
@@ -28,6 +29,7 @@ namespace Simple.MailServer.Smtp
 
             var hasNoRecipients = CreateResponseIfHasNoRecipients();
             if (hasNoRecipients != SmtpResponse.None) return hasNotMailFrom;
+            // ReSharper restore PossibleUnintendedReferenceComparison
 
             var response = _responderFactory.DataResponder.DataStart(SessionInfo);
 

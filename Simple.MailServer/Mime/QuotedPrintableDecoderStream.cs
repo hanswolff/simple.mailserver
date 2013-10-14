@@ -14,14 +14,19 @@ namespace Simple.MailServer.Mime
 
         public QuotedPrintableDecoderStream(Stream baseStream, bool ignoreErrors = false, long maxReadPosition = -1)
         {
-            if (baseStream == null) throw new ArgumentNullException("baseStream");
-
-            if (!baseStream.CanRead)
-                throw new ArgumentException("baseStream must be readable", "baseStream");
+            CheckBaseStreamRequirements(baseStream);
 
             BaseStream = baseStream;
             IgnoreErrors = ignoreErrors;
             MaxReadPosition = maxReadPosition;
+        }
+
+        private static void CheckBaseStreamRequirements(Stream baseStream)
+        {
+            if (baseStream == null) throw new ArgumentNullException("baseStream");
+
+            if (!baseStream.CanRead)
+                throw new ArgumentException("baseStream must be readable", "baseStream");
         }
 
         public override bool CanRead
