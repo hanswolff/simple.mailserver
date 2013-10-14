@@ -1,11 +1,13 @@
 ﻿using Simple.MailServer.Logging;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Simple.MailServer
 {
+    [DebuggerDisplay("{ListenAddress}:{Port}")]
     public class PortListener : IDisposable
     {
         public int Port { get; private set; }

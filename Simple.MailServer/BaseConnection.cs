@@ -1,5 +1,6 @@
 ﻿using Simple.MailServer.Mime;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Simple.MailServer
 {
+    [DebuggerDisplay("{RemoteEndPoint} -> {PortBinding}")]
     public abstract class BaseConnection : IClientConnection, ICanReadLineAsync
     {
         public NetworkStream NetworkStream { get; protected set; }

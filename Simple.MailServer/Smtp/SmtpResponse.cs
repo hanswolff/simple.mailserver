@@ -11,6 +11,11 @@ namespace Simple.MailServer.Smtp
         public static SmtpResponse DataStart = new SmtpResponse(354, "OK");
         public static SmtpResponse Disconnect = new SmtpResponse(221, "Bye");
 
+        public static SmtpResponse InternalServerError = new SmtpResponse(500, "Internal Server Error");
+        public static SmtpResponse LineTooLong = new SmtpResponse(500, "Line Too Long");
+        public static SmtpResponse NotImplemented = new SmtpResponse(502, "5.5.2 Command not implemented");
+        public static SmtpResponse SyntaxError = new SmtpResponse(501, "Syntax error in parameters or arguments");
+
         public List<string> AdditionalLines { get; private set; }
 
         public bool Success { get { return ResponseCode >= 200 && ResponseCode < 400; } }
@@ -36,6 +41,11 @@ namespace Simple.MailServer.Smtp
         object ICloneable.Clone()
         {
             return Clone();
+        }
+
+        public override string ToString()
+        {
+            return ResponseCode + " " + ResponseText;
         }
     }
 }

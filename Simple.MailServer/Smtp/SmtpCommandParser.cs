@@ -18,16 +18,19 @@ namespace Simple.MailServer.Smtp
 
         private Dictionary<string, Func<string, string, SmtpResponse>> CreateCommandMapping()
         {
-            var mapping = new Dictionary<string, Func<string, string, SmtpResponse>>();
-            mapping["DATA"] = ProcessCommandDataStart;
-            mapping["EHLO"] = ProcessCommandEhlo;
-            mapping["HELO"] = ProcessCommandHelo;
-            mapping["MAIL FROM:"] = ProcessCommandMailFrom;
-            mapping["NOOP"] = ProcessCommandNoop;
-            mapping["QUIT"] = ProcessCommandQuit;
-            mapping["RCPT TO:"] = ProcessCommandRcptTo;
-            mapping["RSET"] = ProcessCommandRset;
-            mapping["VRFY"] = ProcessCommandVrfy;
+            var mapping = new Dictionary<string, Func<string, string, SmtpResponse>>
+            {
+                { "DATA", ProcessCommandDataStart },
+                { "EHLO", ProcessCommandEhlo },
+                { "HELO", ProcessCommandHelo },
+                { "MAIL FROM:", ProcessCommandMailFrom },
+                { "NOOP", ProcessCommandNoop },
+                { "QUIT", ProcessCommandQuit },
+                { "RCPT TO:", ProcessCommandRcptTo },
+                { "RSET", ProcessCommandRset },
+                { "VRFY", ProcessCommandVrfy },
+            };
+
             return mapping;
         }
 
@@ -54,7 +57,7 @@ namespace Simple.MailServer.Smtp
             catch (Exception ex)
             {
                 MailServerLogger.Instance.Error(ex);
-                return new SmtpResponse(500, "Internal Server Error");
+                return SmtpResponse.InternalServerError;
             }
         }
 
@@ -73,49 +76,24 @@ namespace Simple.MailServer.Smtp
             if (ProcessRawLineHasResponse(line, out smtpResponse))
                 return smtpResponse;
 
-            string command = null;
-            string arguments = "";
+            Func<string, string, SmtpResponse> commandFunc;
 
-            Func<string, string, SmtpResponse> commandFunc = null;
-
-            // TODO: this code is a mess, make it readable
-            var pos = line.IndexOf(':');
-            if (pos >= 0)
-            {
-                command = line.Substring(0, pos + 1).ToUpperInvariant().Trim();
-                arguments = line.Substring(pos + 1);
-                _commandMapping.TryGetValue(command, out commandFunc);
-            }
-            if (commandFunc == null)
-            {
-                pos = line.IndexOf(' ');
-                if (pos >= 0)
-                {
-                    command = line.Substring(0, pos).ToUpperInvariant().Trim();
-                    arguments = line.Substring(pos + 1);
-                    _commandMapping.TryGetValue(command, out commandFunc);
-                }
-            }
-            if (command == null)
-            {
-                command = line.ToUpperInvariant().Trim();
-                _commandMapping.TryGetValue(command, out commandFunc);
-            }
+            var commandWithArguments = GetCommandWithArgumentsAndCommandFunction(line, out commandFunc);
 
             if (commandFunc != null)
             {
-                var response = commandFunc(command, arguments);
+                var response = commandFunc(commandWithArguments.Command, commandWithArguments.Arguments);
                 return response;
             }
 
-            return new SmtpResponse(502, "5.5.2 Command not implemented");
+            return SmtpResponse.NotImplemented;
         }
 
         private static bool IsLineTooLong(byte[] lineBuf, out SmtpResponse smtpResponse)
         {
             if (lineBuf.Length > 2040)
             {
-                smtpResponse = new SmtpResponse(500, "Line too long");
+                smtpResponse = SmtpResponse.LineTooLong;
                 return true;
             }
 
@@ -136,6 +114,47 @@ namespace Simple.MailServer.Smtp
                 return ProcessCommandDataEnd();
             }
             return ProcessDataLine(lineBuf);
+        }
+
+        private CommandWithArguments GetCommandWithArgumentsAndCommandFunction(string line, out Func<string, string, SmtpResponse> commandFunc)
+        {
+            var commandWithArguments = SplitCommandWithArgumentsAtCharacter(line, ':');
+
+            if (commandWithArguments == CommandWithArguments.Empty ||
+                !_commandMapping.TryGetValue(commandWithArguments.Command, out commandFunc))
+            {
+                commandWithArguments = SplitCommandWithArgumentsAtCharacter(line, ' ');
+            }
+
+            if (commandWithArguments == CommandWithArguments.Empty ||
+                !_commandMapping.TryGetValue(commandWithArguments.Command, out commandFunc))
+            {
+                commandWithArguments = new CommandWithArguments { Command = line.ToUpperInvariant().Trim() };
+                _commandMapping.TryGetValue(commandWithArguments.Command, out commandFunc);
+            }
+            return commandWithArguments;
+        }
+
+        private CommandWithArguments SplitCommandWithArgumentsAtCharacter(string line, char splitChar)
+        {
+            var pos = line.IndexOf(splitChar);
+            if (pos >= 0)
+            {
+                var command = line.Substring(0, pos + 1).ToUpperInvariant().Trim();
+                var arguments = line.Substring(pos + 1);
+
+                return new CommandWithArguments { Command = command, Arguments = arguments };
+            }
+
+            return CommandWithArguments.Empty;
+        }
+
+        private class CommandWithArguments
+        {
+            public static readonly CommandWithArguments Empty = new CommandWithArguments();
+
+            public string Command { get; set; }
+            public string Arguments { get; set; }
         }
     }
 }

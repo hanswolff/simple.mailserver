@@ -10,12 +10,12 @@ namespace Simple.MailServer.Tests.Smtp
     public class SmtpSessionInfoResponderFacts
     {
         [Fact]
-        public void invalid_command_returns_error_response()
+        public void invalid_command_returns_not_implemented_response()
         {
             var parseResponder = DefaultResponder();
             var response = SendCommand(parseResponder, "INVALID");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.NotImplemented, response);
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Simple.MailServer.Tests.Smtp
             var parseResponder = DefaultResponder();
             var response = SendCommand(parseResponder, "HELO localhost" + new string(' ', 2100));
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.LineTooLong, response);
         }
 
         [Fact]
@@ -44,6 +44,7 @@ namespace Simple.MailServer.Tests.Smtp
             var response = SendCommand(parseResponder, "DATA");
 
             Assert.False(response.Success);
+            Assert.False(parseResponder.InDataMode);
         }
 
         [Fact]
@@ -53,6 +54,7 @@ namespace Simple.MailServer.Tests.Smtp
             var response = SendCommand(parseResponder, "DATA");
 
             Assert.False(response.Success);
+            Assert.False(parseResponder.InDataMode);
         }
 
         [Fact]
@@ -242,12 +244,12 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
-        public void MAIL_FROM_identified_but_invalid_argument_returns_error_response()
+        public void MAIL_FROM_identified_but_invalid_argument_returns_syntax_error_response()
         {
             var parseResponder = IdentifiedParseResponder();
             var response = SendCommand(parseResponder, "MAIL FROM:-");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.SyntaxError, response);
         }
 
         [Fact]
@@ -315,6 +317,26 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
+        public void RCPT_TO_identified_and_has_MAIL_FROM_should_be_tolerant_about_spaces()
+        {
+            var parseResponder = MailFromIdentifiedParseResponder();
+            var response = SendCommand(parseResponder, "RCPT TO:   <test@localhost>");
+
+            Assert.True(response.Success);
+            Assert.Equal("test@localhost", parseResponder.SessionInfo.Recipients.First().MailAddress);
+        }
+
+        [Fact]
+        public void RCPT_TO_identified_and_has_MAIL_FROM_should_be_tolerant_about_mail_address_format()
+        {
+            var parseResponder = MailFromIdentifiedParseResponder();
+            var response = SendCommand(parseResponder, "RCPT TO:test@localhost");
+
+            Assert.True(response.Success);
+            Assert.Equal("test@localhost", parseResponder.SessionInfo.Recipients.First().MailAddress);
+        }
+
+        [Fact]
         public void RCPT_TO_called_twice_identified_and_has_MAIL_FROM_collects_mail_addresses()
         {
             var parseResponder = MailFromIdentifiedParseResponder();
@@ -327,12 +349,12 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
-        public void RCPT_TO_identified_and_has_MAIL_FROM_but_invalid_recipient_returns_error_response()
+        public void RCPT_TO_identified_and_has_MAIL_FROM_but_invalid_recipient_returns_syntax_error_response()
         {
             var parseResponder = MailFromIdentifiedParseResponder();
             var response = SendCommand(parseResponder, "RCPT TO:-");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.SyntaxError, response);
         }
 
         [Fact]

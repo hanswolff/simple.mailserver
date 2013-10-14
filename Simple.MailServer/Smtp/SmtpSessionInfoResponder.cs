@@ -86,7 +86,7 @@ namespace Simple.MailServer.Smtp
             try { mailAddressWithParameters = MailAddressWithParameters.Parse(mailFrom); }
             catch (FormatException)
             {
-                return new SmtpResponse(501, "Syntax error in parameters or arguments");
+                return SmtpResponse.SyntaxError;
             }
 
             var response = _responderFactory.MailFromResponder.VerifyMailFrom(SessionInfo, mailAddressWithParameters);
@@ -121,7 +121,7 @@ namespace Simple.MailServer.Smtp
             try { mailAddressWithParameters = MailAddressWithParameters.Parse(recipient); }
             catch (FormatException)
             {
-                return new SmtpResponse(501, "Syntax error in parameters or arguments");
+                return SmtpResponse.SyntaxError;
             }
 
             var response = _responderFactory.RecipientToResponder.VerifyRecipientTo(SessionInfo, mailAddressWithParameters);
