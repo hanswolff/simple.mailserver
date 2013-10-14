@@ -6,15 +6,16 @@ namespace Simple.MailServer.Smtp
 {
     public class SmtpResponse : ICloneable
     {
-        public static SmtpResponse None = new SmtpResponse(0, "");
-        public static SmtpResponse OK = new SmtpResponse(250, "OK");
-        public static SmtpResponse DataStart = new SmtpResponse(354, "OK");
-        public static SmtpResponse Disconnect = new SmtpResponse(221, "Bye");
+        public static readonly SmtpResponse None = new SmtpResponse(0, "");
+        public static readonly SmtpResponse OK = new SmtpResponse(250, "OK");
+        public static readonly SmtpResponse DataStart = new SmtpResponse(354, "OK");
+        public static readonly SmtpResponse Disconnect = new SmtpResponse(221, "Bye");
 
-        public static SmtpResponse InternalServerError = new SmtpResponse(500, "Internal Server Error");
-        public static SmtpResponse LineTooLong = new SmtpResponse(500, "Line Too Long");
-        public static SmtpResponse NotImplemented = new SmtpResponse(502, "5.5.2 Command not implemented");
-        public static SmtpResponse SyntaxError = new SmtpResponse(501, "Syntax error in parameters or arguments");
+        public static readonly SmtpResponse InternalServerError = new SmtpResponse(500, "Internal Server Error");
+        public static readonly SmtpResponse LineTooLong = new SmtpResponse(500, "Line Too Long");
+        public static readonly SmtpResponse NotImplemented = new SmtpResponse(502, "5.5.2 Command not implemented");
+        public static readonly SmtpResponse NotIdentified = new SmtpResponse(502, "5.5.1 Use HELO/EHLO first.");
+        public static readonly SmtpResponse SyntaxError = new SmtpResponse(501, "Syntax error in parameters or arguments");
 
         public List<string> AdditionalLines { get; private set; }
 

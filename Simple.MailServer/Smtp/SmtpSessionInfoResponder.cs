@@ -162,7 +162,7 @@ namespace Simple.MailServer.Smtp
         {
             if (SessionInfo.Identification.Mode == SmtpIdentificationMode.NotIdentified)
             {
-                return new SmtpResponse(502, "5.5.1 Use HELO/EHLO first.");
+                return SmtpResponse.NotIdentified;
             }
             return SmtpResponse.None;
         }

@@ -28,12 +28,12 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
-        public void DATA_not_identified_returns_error_response()
+        public void DATA_not_identified_returns_not_identified_error_response()
         {
             var parseResponder = DefaultResponder();
             var response = SendCommand(parseResponder, "DATA");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.NotIdentified, response);
             Assert.False(parseResponder.InDataMode);
         }
 
@@ -214,12 +214,12 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
-        public void MAIL_FROM_not_identified_returns_error_response()
+        public void MAIL_FROM_not_identified_returns_not_identified_error_response()
         {
             var parseResponder = DefaultResponder();
             var response = SendCommand(parseResponder, "MAIL FROM:<test@localhost>");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.NotIdentified, response);
         }
 
         [Fact]
@@ -289,12 +289,12 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
-        public void RCPT_TO_not_identified_returns_error_response()
+        public void RCPT_TO_not_identified_returns_not_identified_error_response()
         {
             var parseResponder = DefaultResponder();
             var response = SendCommand(parseResponder, "RCPT TO:<test@localhost>");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.NotIdentified, response);
         }
 
         [Fact]
@@ -413,12 +413,12 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         [Fact]
-        public void VRFY_not_identified_returns_error_response()
+        public void VRFY_not_identified_returns_not_identified_error_response()
         {
             var parseResponder = DefaultResponder();
             var response = SendCommand(parseResponder, "VRFY");
 
-            Assert.False(response.Success);
+            Assert.Equal(SmtpResponse.NotIdentified, response);
         }
 
         [Fact]
