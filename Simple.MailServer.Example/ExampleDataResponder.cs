@@ -60,8 +60,7 @@ namespace Simple.MailServer.Example
 
             Console.WriteLine("Mail received ({0} bytes): {1}", size, fileName);
 
-            var response = SmtpResponse.OK.Clone();
-            response.ResponseText = String.Format("{0} bytes received", size);
+            var response = SmtpResponse.OK.CloneAndChange(String.Format("{0} bytes received", size));
 
             return response;
         }

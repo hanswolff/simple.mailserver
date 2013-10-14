@@ -11,7 +11,7 @@ namespace Simple.MailServer.Tests.Smtp
 {
     public class SmtpServerFacts
     {
-        [Fact(Timeout = 1000)]
+        [Fact(Timeout = 2000)]
         public void SmtpServer_should_be_able_to_receive_mail_from_SmtpClient()
         {
             var testPort = GetTestPort();
@@ -27,7 +27,7 @@ namespace Simple.MailServer.Tests.Smtp
                     Task.Factory.StartNew(() => SendMail(testPort, "mail@from.me", "mail@to.you", "subject", "body"),
                         TaskCreationOptions.LongRunning);
 
-                Assert.True(sendMailTask.Wait(1000));
+                Assert.True(sendMailTask.Wait(1500));
 
                 var mailData = mailDataCollector.MailData;
                 Assert.Contains("mail@from.me", mailData);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Simple.MailServer.Smtp
@@ -17,26 +18,28 @@ namespace Simple.MailServer.Smtp
         public static readonly SmtpResponse NotIdentified = new SmtpResponse(502, "5.5.1 Use HELO/EHLO first.");
         public static readonly SmtpResponse SyntaxError = new SmtpResponse(501, "Syntax error in parameters or arguments");
 
-        public List<string> AdditionalLines { get; private set; }
+        public ReadOnlyCollection<string> AdditionalLines { get; private set; }
 
         public bool Success { get { return ResponseCode >= 200 && ResponseCode < 400; } }
 
-        public int ResponseCode { get; set; }
-        public string ResponseText { get; set; }
+        public int ResponseCode { get; private set; }
+        public string ResponseText { get; private set; }
 
-        public SmtpResponse(int responseCode, string responseText)
+        public SmtpResponse(int responseCode, string responseText, IList<string> additionalLines = null)
         {
-            AdditionalLines = new List<string>();
+            AdditionalLines = new ReadOnlyCollection<string>(additionalLines ?? new List<string>());
             ResponseCode = responseCode;
             ResponseText = responseText;
         }
 
         public SmtpResponse Clone()
         {
-            return new SmtpResponse(ResponseCode, ResponseText)
-            {
-                AdditionalLines = AdditionalLines.ToList()
-            };
+            return new SmtpResponse(ResponseCode, ResponseText, AdditionalLines.ToList());
+        }
+
+        public SmtpResponse CloneAndChange(string newResponseText)
+        {
+            return new SmtpResponse(ResponseCode, newResponseText, AdditionalLines.ToList());
         }
 
         object ICloneable.Clone()
@@ -47,22 +50,15 @@ namespace Simple.MailServer.Smtp
         public bool Equals(SmtpResponse other)
         {
             if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (ResponseCode != other.ResponseCode) return false;
             if (ResponseText != other.ResponseText) return false;
 
             if (AdditionalLines.Count != other.AdditionalLines.Count) return false;
             for (var i = AdditionalLines.Count - 1; i >= 0; i--)
             {
-                try
-                {
-                    if (AdditionalLines[i] != other.AdditionalLines[i])
-                        return false;
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    // might happen if collection altered in different thread
+                if (AdditionalLines[i] != other.AdditionalLines[i])
                     return false;
-                }
             }
 
             return true;
@@ -71,6 +67,25 @@ namespace Simple.MailServer.Smtp
         bool IEquatable<SmtpResponse>.Equals(SmtpResponse other)
         {
             return Equals(other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((SmtpResponse)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = ResponseCode.GetHashCode();
+                hashCode = (hashCode * 397) ^ (ResponseText != null ? ResponseText.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ AdditionalLines.Count.GetHashCode();
+                return hashCode;
+            }
         }
 
         public override string ToString()
