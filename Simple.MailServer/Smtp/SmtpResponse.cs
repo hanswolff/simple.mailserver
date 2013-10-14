@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpResponse : ICloneable
+    public class SmtpResponse : ICloneable, IEquatable<SmtpResponse>
     {
         public static readonly SmtpResponse None = new SmtpResponse(0, "");
         public static readonly SmtpResponse OK = new SmtpResponse(250, "OK");
@@ -42,6 +42,35 @@ namespace Simple.MailServer.Smtp
         object ICloneable.Clone()
         {
             return Clone();
+        }
+
+        public bool Equals(SmtpResponse other)
+        {
+            if (other == null) return false;
+            if (ResponseCode != other.ResponseCode) return false;
+            if (ResponseText != other.ResponseText) return false;
+
+            if (AdditionalLines.Count != other.AdditionalLines.Count) return false;
+            for (var i = AdditionalLines.Count - 1; i >= 0; i--)
+            {
+                try
+                {
+                    if (AdditionalLines[i] != other.AdditionalLines[i])
+                        return false;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    // might happen if collection altered in different thread
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        bool IEquatable<SmtpResponse>.Equals(SmtpResponse other)
+        {
+            return Equals(other);
         }
 
         public override string ToString()

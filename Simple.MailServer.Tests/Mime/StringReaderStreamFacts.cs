@@ -58,7 +58,7 @@ namespace Simple.MailServer.Tests.Mime
             Assert.Equal(expected, stringReaderStream.ReadLine());
         }
 
-        [Theory(Timeout = 100)]
+        [Theory]
         [InlineData("text", 2, "te", "xt")]
         [InlineData("text", 3, "tex", "t")]
         [InlineData("text12", 4, "text", "12")]
