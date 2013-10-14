@@ -55,7 +55,10 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var response1 = new SmtpResponse(250, "");
             var response2 = new SmtpResponse(251, "");
+
             Assert.False(response1.Equals(response2));
+            Assert.False(response1.Equals((object)response2));
+            Assert.NotEqual(response1.GetHashCode(), response2.GetHashCode());
         }
 
         [Fact]
@@ -63,7 +66,10 @@ namespace Simple.MailServer.Tests.Smtp
         {
             var response1 = new SmtpResponse(250, "text");
             var response2 = new SmtpResponse(250, "different text");
+
             Assert.False(response1.Equals(response2));
+            Assert.False(response1.Equals((object)response2));
+            Assert.NotEqual(response1.GetHashCode(), response2.GetHashCode());
         }
 
         [Fact]
@@ -73,6 +79,7 @@ namespace Simple.MailServer.Tests.Smtp
             var response2 = new SmtpResponse(250, "");
 
             Assert.False(response1.Equals(response2));
+            Assert.False(response1.Equals((object)response2));
         }
 
         [Fact]
@@ -82,6 +89,7 @@ namespace Simple.MailServer.Tests.Smtp
             var response2 = new SmtpResponse(250, "", new[] { "different line" });
 
             Assert.False(response1.Equals(response2));
+            Assert.False(response1.Equals((object)response2));
         }
 
         [Fact]
@@ -91,6 +99,8 @@ namespace Simple.MailServer.Tests.Smtp
             var response2 = new SmtpResponse(250, "same", new[] { "line" });
             
             Assert.True(response1.Equals(response2));
+            Assert.True(response1.Equals((object)response2));
+            Assert.Equal(response1.GetHashCode(), response2.GetHashCode());
         }
     }
 }
