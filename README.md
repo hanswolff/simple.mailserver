@@ -2,6 +2,12 @@
 
 Simple SMTP Mail Server in C# 5 (using async features)
 
+## Installation
+
+    ```
+    PM> Install-Package Simple.MailServer
+    ```
+
 ## Supported Features
 
 - basic SMTP protocol (extendible through provided interfaces)
@@ -16,7 +22,7 @@ Simple SMTP Mail Server in C# 5 (using async features)
 
 # Related Projects
 
-If you need to parse mail messages, have a look at MimeKit:
+If you need to parse mail messages, have a look at MimeKit:  
 https://github.com/jstedfast/MimeKit
 
 # Contact
