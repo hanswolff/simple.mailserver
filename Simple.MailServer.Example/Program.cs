@@ -23,9 +23,9 @@
 #endregion
 using Simple.MailServer.Logging;
 using Simple.MailServer.Smtp;
+using Simple.MailServer.Smtp.Config;
 using System;
 using System.Net;
-using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Example
 {
@@ -35,6 +35,7 @@ namespace Simple.MailServer.Example
 
         static void Main()
         {
+            // to inject your own logging implement IMailServerLogger
             MailServerLogger.Set(new MailServerConsoleLogger(MailServerLogLevel.Debug));
 
             using (StartSmtpServer())
@@ -46,11 +47,18 @@ namespace Simple.MailServer.Example
 
         private static SmtpServer StartSmtpServer()
         {
-            var smtpServer = new SmtpServer();
-            smtpServer.Configuration.DefaultGreeting = "Simple.MailServer Example";
-            smtpServer.DefaultResponderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration)
+            var smtpServer = new SmtpServer
+            {
+                Configuration =
+                {
+                    DefaultGreeting = "Simple.MailServer Example"
+                }
+            };
+            smtpServer.DefaultResponderFactory = 
+                new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration)
             {
                 DataResponder = new ExampleDataResponder(smtpServer.Configuration, RootMailDir)
+                // ... inject other responders here as needed (or leave default)
             };
 
             smtpServer.BindAndListenTo(IPAddress.Loopback, 25);

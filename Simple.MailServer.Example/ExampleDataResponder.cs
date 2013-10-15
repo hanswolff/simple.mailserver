@@ -54,8 +54,9 @@ namespace Simple.MailServer.Example
 
         private string GetFileNameFromSessionInfo(SmtpSessionInfo sessionInfo)
         {
-            var fileName = Path.Combine(_mailDir, sessionInfo.CreatedTimestamp.ToString("yyyy-MM-dd_HHmmss_fff") + ".eml");
-            return fileName;
+            var fileName = sessionInfo.CreatedTimestamp.ToString("yyyy-MM-dd_HHmmss_fff") + ".eml";
+            var fullName = Path.Combine(_mailDir, fileName);
+            return fullName;
         }
 
         public override SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf)
@@ -83,7 +84,8 @@ namespace Simple.MailServer.Example
 
             Console.WriteLine("Mail received ({0} bytes): {1}", size, fileName);
 
-            var response = SmtpResponse.OK.CloneAndChange(String.Format("{0} bytes received", size));
+            var successMessage = String.Format("{0} bytes received", size);
+            var response = SmtpResponse.OK.CloneAndChange(successMessage);
 
             return response;
         }
