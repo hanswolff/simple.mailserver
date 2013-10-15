@@ -4,9 +4,7 @@ Simple SMTP Mail Server in C# 5 (using async features)
 
 ## Installation
 
-    ```
     PM> Install-Package Simple.MailServer
-    ```
 
 ## Supported Features
 
