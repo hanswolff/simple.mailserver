@@ -4,16 +4,20 @@ Simple SMTP Mail Server in C# 5 (using async features)
 
 ## Supported Features
 
-- basic SMTP protocol (extendable through provided interfaces)
+- basic SMTP protocol (extendible through provided interfaces)
 - multiple port bindings
-- made using C# 5 async (for better performance than just threads)
+- extensively using C# 5 async (for better performance than just threads)
 - certain MIME features for encoding, date parsing (RFC 2822, RFC 5335)
 
 ## Planned Features
 
-- basic POP3 protocol (extendable through interfaces)
+- basic POP3 protocol (extendible through interfaces)
 - SSL/TLS support
-- MIME mail parsing
+
+# Related Projects
+
+If you need to parse mail messages, have a look at MimeKit:
+https://github.com/jstedfast/MimeKit
 
 # Contact
 
