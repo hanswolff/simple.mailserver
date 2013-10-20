@@ -21,11 +21,9 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 
 namespace Simple.MailServer.Smtp
 {
-    [DebuggerDisplay("{Connection}")]
     public class SmtpSession : BaseSession
     {
         public ISmtpResponderFactory ResponderFactory { get; set; }

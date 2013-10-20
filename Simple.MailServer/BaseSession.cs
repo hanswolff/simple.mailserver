@@ -26,6 +26,7 @@ using System.Threading;
 
 namespace Simple.MailServer
 {
+    [DebuggerDisplay("{Connection}")]
     public class BaseSession : IHaveIdleTimeSpan, ICanDisconnect, IDisposable
     {
         public bool Active { get; protected set; }

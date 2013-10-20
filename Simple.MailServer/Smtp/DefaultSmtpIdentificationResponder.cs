@@ -21,7 +21,6 @@
 #endregion
 
 using Simple.MailServer.Smtp.Config;
-using System;
 
 namespace Simple.MailServer.Smtp
 {
