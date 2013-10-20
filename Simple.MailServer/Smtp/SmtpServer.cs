@@ -50,7 +50,6 @@ namespace Simple.MailServer.Smtp
 
         public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("Client connected from " + args.Connection.RemoteEndPoint);
         public event EventHandler<SmtpConnectionEventArgs> ClientDisconnected = (sender, args) => MailServerLogger.Instance.Info("Client disconnected from " + args.Connection.RemoteEndPoint);
-        public event EventHandler<SmtpSessionEventArgs> SessionCreated = (sender, args) => MailServerLogger.Instance.Debug("Session created for " + args.Session.Connection.RemoteEndPoint);
         public event EventHandler<SmtpSessionEventArgs> GreetingSent = (sender, args) => MailServerLogger.Instance.Debug("Greeting sent to " + args.Session.Connection.RemoteEndPoint);
 
         public IdleConnectionDisconnectWatchdog<SmtpServer> Watchdog { get; private set; }
@@ -175,7 +174,7 @@ namespace Simple.MailServer.Smtp
 
         private async Task CreateSessionAndProcessCommands(SmtpConnection connection)
         {
-            var session = CreateSession(connection);
+            var session = connection.CreateSession(DefaultResponderFactory);
             await SetupSessionThenProcessCommands(connection, session);
         }
 
@@ -247,16 +246,6 @@ namespace Simple.MailServer.Smtp
             logger.Debug(logMessage.ToString());
         }
 
-        private SmtpSession CreateSession(SmtpConnection connection)
-        {
-            var session = new SmtpSession(connection, DefaultResponderFactory);
-            session.OnSessionDisconnected +=
-                (sender, args) => ClientDisconnected(this, new SmtpConnectionEventArgs(args.Session.Connection));
-            connection.Session = session;
-
-            SessionCreated(this, new SmtpSessionEventArgs(connection.Session));
-            return session;
-        }
 
         protected async Task SendGreetingAsync(SmtpConnection connectionToSendGreetingTo, string greeting)
         {

@@ -31,14 +31,14 @@ namespace Simple.MailServer.Tests
         [Fact]
         public void GetIdleTimeMilliseconds_starts_at_zero()
         {
-            var session = new BaseSession();
+            var session = new BaseSession(null);
             Assert.InRange(session.GetIdleTimeMilliseconds(), 0, 10);
         }
 
         [Fact]
         public void GetIdleTimeMilliseconds_increases_over_time()
         {
-            var session = new BaseSession();
+            var session = new BaseSession(null);
             Thread.Sleep(20);
             Assert.InRange(session.GetIdleTimeMilliseconds(), 10, 100);
         }

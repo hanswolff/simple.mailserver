@@ -50,11 +50,13 @@
     <Compile Include="BufferEventArgs.cs" />
     <Compile Include="ClientConnectionEventArgs.cs" />
     <Compile Include="ICanReadLineAsync.cs" />
+    <Compile Include="ISession.cs" />
     <Compile Include="Logging\MailServerConsoleLogger.cs" />
     <Compile Include="Logging\MailServerLogLevel.cs" />
     <Compile Include="Mime\EmailValidator.cs" />
     <Compile Include="RawLineEventArgs.cs" />
     <Compile Include="RequestDisconnectionEventArgs.cs" />
+    <Compile Include="SessionEventArgs.cs" />
     <Compile Include="Smtp\Config\IConfigMaxMailMessageSize.cs" />
     <Compile Include="Smtp\Config\IConfiguredSmtpRestrictions.cs" />
     <Compile Include="Smtp\ISmtpResponderFactory.cs" />

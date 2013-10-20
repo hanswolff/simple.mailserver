@@ -19,10 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #endregion
+
 namespace Simple.MailServer
 {
-    public interface ICanDisconnect
+    public interface ISession : ICanDisconnect, IHaveIdleTimeSpan
     {
-        void Disconnect();
     }
 }

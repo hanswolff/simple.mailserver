@@ -1,6 +1,4 @@
 ﻿#region Header
-// BaseSession.cs
-// 
 // Copyright (c) 2013 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,10 +25,13 @@ using System.Threading;
 
 namespace Simple.MailServer
 {
-    public class BaseSession : IHaveIdleTimeSpan, IDisposable
+    public class BaseSession : IHaveIdleTimeSpan, ICanDisconnect, IDisposable
     {
         public bool Active { get; protected set; }
         public bool Disconnected { get; protected set; }
+
+        public BaseConnection Connection { get; private set; }
+        public event EventHandler<SessionEventArgs> OnSessionDisconnected = (s, e) => { };
 
         public object Tag { get; set; }
 
@@ -43,15 +44,28 @@ namespace Simple.MailServer
             return Stopwatch.ElapsedMilliseconds - lastActivity;
         }
 
-        public BaseSession()
+        internal BaseSession(BaseConnection connection)
         {
             Active = true;
+            Connection = connection;
             LastActivity = Stopwatch.ElapsedMilliseconds;            
         }
 
         public void UpdateActivity()
         {
             Interlocked.Exchange(ref LastActivity, Stopwatch.ElapsedMilliseconds);
+        }
+
+        public void Disconnect()
+        {
+            if (!Disconnected)
+            {
+                Disconnected = true;
+                Active = false;
+                if (Connection != null)
+                    Connection.Disconnect();
+                OnSessionDisconnected(this, new SessionEventArgs(this));
+            }
         }
 
         #region Dispose

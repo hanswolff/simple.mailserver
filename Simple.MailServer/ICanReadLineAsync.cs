@@ -1,6 +1,4 @@
 ﻿#region Header
-// ICanReadLineAsync.cs
-// 
 // Copyright (c) 2013 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

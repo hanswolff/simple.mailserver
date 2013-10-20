@@ -1,6 +1,4 @@
 ﻿#region Header
-// SmtpConnection.cs
-// 
 // Copyright (c) 2013 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,6 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #endregion
+using Simple.MailServer.Logging;
 using System;
 using System.Net.Sockets;
 
@@ -32,6 +31,7 @@ namespace Simple.MailServer.Smtp
         public SmtpServer Server { get; set; }
 
         public event EventHandler<SmtpConnectionEventArgs> ClientDisconnected = (s, c) => {};
+        public event EventHandler<SmtpSessionEventArgs> SessionCreated = (sender, args) => MailServerLogger.Instance.Debug("Session created for " + args.Session.Connection.RemoteEndPoint);
 
         public override long GetIdleTimeMilliseconds()
         {
@@ -46,6 +46,18 @@ namespace Simple.MailServer.Smtp
 
             Server = server;
         }
+
+        public SmtpSession CreateSession(ISmtpResponderFactory responderFactory)
+        {
+            var session = new SmtpSession(this, responderFactory);
+            session.OnSessionDisconnected +=
+                (sender, args) => ClientDisconnected(this, new SmtpConnectionEventArgs(this));
+            Session = session;
+
+            SessionCreated(this, new SmtpSessionEventArgs(Session));
+            return session;
+        }
+
 
         public override void Disconnect()
         {
