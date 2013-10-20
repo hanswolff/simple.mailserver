@@ -120,43 +120,40 @@ namespace Simple.MailServer.Mime
                         continue;
                     }
                     buffer[read++] = b;
+                    continue;
                 }
-                else
+
+                _triBuf[_bytesAfterEqualsSign] = b;
+                _bytesAfterEqualsSign++;
+                if (_bytesAfterEqualsSign < 3) continue;
+                _bytesAfterEqualsSign = 0;
+
+                if (_triBuf[1] == '\r' || _triBuf[1] == '\n')
                 {
-                    _triBuf[_bytesAfterEqualsSign] = b;
-                    _bytesAfterEqualsSign++;
-                    if (_bytesAfterEqualsSign >= 3)
-                    {
-                        _bytesAfterEqualsSign = 0;
-
-                        if (_triBuf[1] == '\r' || _triBuf[1] == '\n')
-                        {
-                            if (!IgnoreErrors && _triBuf[2] != '\r' && _triBuf[2] != '\n')
-                                throw new InvalidOperationException("Cannot decode sequence =" + Escape(_triBuf[1]) + Escape(_triBuf[2]));
-                            continue;
-                        }
-
-                        int val1 = _triBuf[1];
-                        val1 -= (val1 < 58 ? 48 : (val1 < 97 ? 55 : 87));
-                        int val2 = _triBuf[2];
-                        val2 -= (val2 < 58 ? 48 : (val2 < 97 ? 55 : 87));
-                        if (val1 < 0 || val1 > 15)
-                        {
-                            if (!IgnoreErrors)
-                                throw new InvalidOperationException("Cannot decode sequence =" + Escape(_triBuf[1]) + Escape(_triBuf[2]));
-                            val1 = 0;
-                            val2 = 0;
-                        }
-                        if (val2 < 0 || val2 > 15)
-                        {
-                            if (!IgnoreErrors)
-                                throw new InvalidOperationException("Cannot decode sequence =" + Escape(_triBuf[1]) + Escape(_triBuf[2]));
-                            val1 = 0;
-                            val2 = 0;
-                        }
-                        buffer[read++] = ((byte)((val1 << 4) | val2));
-                    }
+                    if (!IgnoreErrors && _triBuf[2] != '\r' && _triBuf[2] != '\n')
+                        throw new InvalidOperationException("Cannot decode sequence =" + Escape(_triBuf[1]) + Escape(_triBuf[2]));
+                    continue;
                 }
+
+                int val1 = _triBuf[1];
+                val1 -= (val1 < 58 ? 48 : (val1 < 97 ? 55 : 87));
+                int val2 = _triBuf[2];
+                val2 -= (val2 < 58 ? 48 : (val2 < 97 ? 55 : 87));
+                if (val1 < 0 || val1 > 15)
+                {
+                    if (!IgnoreErrors)
+                        throw new InvalidOperationException("Cannot decode sequence =" + Escape(_triBuf[1]) + Escape(_triBuf[2]));
+                    val1 = 0;
+                    val2 = 0;
+                }
+                if (val2 < 0 || val2 > 15)
+                {
+                    if (!IgnoreErrors)
+                        throw new InvalidOperationException("Cannot decode sequence =" + Escape(_triBuf[1]) + Escape(_triBuf[2]));
+                    val1 = 0;
+                    val2 = 0;
+                }
+                buffer[read++] = ((byte)((val1 << 4) | val2));
             }
             return read;
         }

@@ -26,14 +26,6 @@ namespace Bdev.Net.Dns
 		static int		_uniqueId;
 
 		/// <summary>
-		/// Private constructor - this static class should never be instantiated
-		/// </summary>
-		public Resolver()
-		{
-			// no implementation
-		}	
-
-		/// <summary>
 		/// Shorthand form to make MX querying easier, essentially wraps up the retreival
 		/// of the MX records, and sorts them by preference
 		/// </summary>

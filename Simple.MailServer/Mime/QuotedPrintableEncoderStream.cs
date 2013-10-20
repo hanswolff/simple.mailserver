@@ -30,6 +30,13 @@ namespace Simple.MailServer.Mime
     {
         public Stream BaseStream { get; private set; }
 
+        private Encoding _defaultEncoding = Encoding.GetEncoding("iso-8859-1");
+        public Encoding DefaultEncoding
+        {
+            get { return _defaultEncoding; }
+            set { _defaultEncoding = value; }
+        }
+
         public QuotedPrintableEncoderStream(Stream baseStream)
         {
             if (baseStream == null) throw new ArgumentNullException("baseStream");
@@ -80,10 +87,9 @@ namespace Simple.MailServer.Mime
 
         private int _charsInLine;
 
-        private static readonly Encoding _encoding = Encoding.GetEncoding("iso-8859-1");
         public void Write(string text)
         {
-            var buf = _encoding.GetBytes(text);
+            var buf = DefaultEncoding.GetBytes(text);
             Write(buf, 0, buf.Length);
         }
 
@@ -92,9 +98,10 @@ namespace Simple.MailServer.Mime
             Write(buffer, 0, buffer.Length);
         }
 
-        private static readonly byte[] _lineBreak = new[] { (byte)'=', (byte)13, (byte)10 };
-        private readonly byte[] _triBuf = new[] { (byte)'=', (byte)0, (byte)0 };
-        private readonly byte[] Hex = Encoding.ASCII.GetBytes("0123456789ABCDEF");
+        private static readonly byte[] LineBreak = { (byte)'=', 13, 10 };
+        private readonly byte[] _triBuf = { (byte)'=', 0, 0 };
+        private static readonly byte[] Hex = Encoding.ASCII.GetBytes("0123456789ABCDEF");
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             for (int i = offset; i < count; i++)
@@ -122,7 +129,7 @@ namespace Simple.MailServer.Mime
                 _charsInLine += currentLen;
                 if (_charsInLine > 75)
                 {
-                    BaseStream.Write(_lineBreak, 0, _lineBreak.Length);
+                    BaseStream.Write(LineBreak, 0, LineBreak.Length);
                     _charsInLine = currentLen;
                 }
                 if (currentLen == 1)
