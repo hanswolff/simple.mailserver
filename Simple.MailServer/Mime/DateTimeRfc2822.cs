@@ -29,21 +29,6 @@ namespace Simple.MailServer.Mime
 {
     public static class DateTimeRfc2822
     {
-        private static readonly Dictionary<string, string> Timezones = new Dictionary<string, string>
-        {
-            {"bst", "+0100"},
-            {"gmt", "-0000"},
-            {"ut",  "-0000"},
-            {"edt", "-0400"},
-            {"est", "-0500"},
-            {"cdt", "-0500"},
-            {"cst", "-0600"},
-            {"mdt", "-0600"},
-            {"mst", "-0700"},
-            {"pdt", "-0700"},
-            {"pst", "-0800"},
-        };
-
         private static readonly Dictionary<string, string> Months = new Dictionary<string, string>
         {
             {"jan", "01"},
@@ -94,7 +79,6 @@ namespace Simple.MailServer.Mime
             */
 
             dateStr = dateStr.ToLowerInvariant();
-            dateStr = DateReplaceTimezones(dateStr);
             dateStr = MakeMonthsNumeric(dateStr);
             dateStr = RemoveDayOfWeek(dateStr);
             dateStr = RemoveBrackets(dateStr);
@@ -109,7 +93,7 @@ namespace Simple.MailServer.Mime
 
             var normalizedDate = CreateNormalizedDate(dmyhmsz);
 
-            const string dateFormat = "dd MM yyyy HH':'mm':'ss zzz";
+            const string dateFormat = "dd MM yyyy HH':'mm':'ss tt";
             return DateTime.TryParseExact(normalizedDate.ToString(),
                 dateFormat,
                 System.Globalization.DateTimeFormatInfo.InvariantInfo,
