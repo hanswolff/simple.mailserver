@@ -21,12 +21,45 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Simple.MailServer.Mime
 {
     public static class DateTimeRfc2822
     {
+        private static readonly Dictionary<string, string> Timezones = new Dictionary<string, string>
+        {
+            {"bst", "+0100"},
+            {"gmt", "-0000"},
+            {"ut",  "-0000"},
+            {"edt", "-0400"},
+            {"est", "-0500"},
+            {"cdt", "-0500"},
+            {"cst", "-0600"},
+            {"mdt", "-0600"},
+            {"mst", "-0700"},
+            {"pdt", "-0700"},
+            {"pst", "-0800"},
+        };
+
+        private static readonly Dictionary<string, string> Months = new Dictionary<string, string>
+        {
+            {"jan", "01"},
+            {"feb", "02"},
+            {"mar", "03"},
+            {"apr", "04"},
+            {"may", "05"},
+            {"jun", "06"},
+            {"jul", "07"},
+            {"aug", "08"},
+            {"sep", "09"},
+            {"oct", "10"},
+            {"nov", "11"},
+            {"dec", "12"},
+        };
+
         /// <summary>
         /// Parses RFC 2822 datetime.
         /// </summary>
@@ -77,10 +110,10 @@ namespace Simple.MailServer.Mime
             var normalizedDate = CreateNormalizedDate(dmyhmsz);
 
             const string dateFormat = "dd MM yyyy HH':'mm':'ss zzz";
-            return DateTime.TryParseExact(normalizedDate.ToString(), 
-                dateFormat, 
-                System.Globalization.DateTimeFormatInfo.InvariantInfo, 
-                System.Globalization.DateTimeStyles.AdjustToUniversal, 
+            return DateTime.TryParseExact(normalizedDate.ToString(),
+                dateFormat,
+                System.Globalization.DateTimeFormatInfo.InvariantInfo,
+                System.Globalization.DateTimeStyles.AdjustToUniversal,
                 out dateTime);
         }
 
@@ -131,33 +164,25 @@ namespace Simple.MailServer.Mime
 
         private static string DateReplaceTimezones(string date)
         {
-            date = date.Replace("gmt", "-0000");
-            date = date.Replace("edt", "-0400");
-            date = date.Replace("est", "-0500");
-            date = date.Replace("cdt", "-0500");
-            date = date.Replace("cst", "-0600");
-            date = date.Replace("mdt", "-0600");
-            date = date.Replace("mst", "-0700");
-            date = date.Replace("pdt", "-0700");
-            date = date.Replace("pst", "-0800");
-            date = date.Replace("bst", "+0100");
+            foreach (var kp in Timezones)
+            {
+                var timeZone = kp.Key;
+                var offset = kp.Value;
+
+                date = Regex.Replace(date, @"\b(" + timeZone + @")\b", offset, RegexOptions.IgnoreCase);
+            }
             return date;
         }
 
         private static string MakeMonthsNumeric(string date)
         {
-            date = date.Replace("jan", "01");
-            date = date.Replace("feb", "02");
-            date = date.Replace("mar", "03");
-            date = date.Replace("apr", "04");
-            date = date.Replace("may", "05");
-            date = date.Replace("jun", "06");
-            date = date.Replace("jul", "07");
-            date = date.Replace("aug", "08");
-            date = date.Replace("sep", "09");
-            date = date.Replace("oct", "10");
-            date = date.Replace("nov", "11");
-            date = date.Replace("dec", "12");
+            foreach (var kp in Months)
+            {
+                var monthName = kp.Key;
+                var monthValue = kp.Value;
+
+                date = Regex.Replace(date, @"\b(" + monthName + @")\b", monthValue, RegexOptions.IgnoreCase);
+            }
             return date;
         }
 
@@ -171,7 +196,7 @@ namespace Simple.MailServer.Mime
 
         private static string RemoveBrackets(string dateStr)
         {
-            // Remove () from date. "Mon, 13 Oct 2003 20:50:57 +0300 (EEST)"
+            // Remove () from date. "Mon, 13 Oct 2003 20:50:57 +0300 (GMT)"
             if (dateStr.IndexOf(" (", StringComparison.Ordinal) > -1)
                 dateStr = dateStr.Substring(0, dateStr.IndexOf(" (", StringComparison.Ordinal));
             return dateStr;
