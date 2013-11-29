@@ -60,8 +60,6 @@ namespace Simple.MailServer.Mime
                 time            = hour ":" minute [ ":" second ] FWS zone
             */
 
-            dateTime = default(DateTime);
-
             dateStr = dateStr.ToLowerInvariant();
             dateStr = DateReplaceTimezones(dateStr);
             dateStr = MakeMonthsNumeric(dateStr);
@@ -70,12 +68,20 @@ namespace Simple.MailServer.Mime
             dateStr = RemoveWhitespaces(dateStr);
 
             string[] dmyhmsz = SplitParts(dateStr);
-            if (dmyhmsz == null) return false;
+            if (dmyhmsz == null)
+            {
+                dateTime = default(DateTime);
+                return false;
+            }
 
             var normalizedDate = CreateNormalizedDate(dmyhmsz);
 
             const string dateFormat = "dd MM yyyy HH':'mm':'ss zzz";
-            return DateTime.TryParseExact(normalizedDate.ToString(), dateFormat, System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None, out dateTime);
+            return DateTime.TryParseExact(normalizedDate.ToString(), 
+                dateFormat, 
+                System.Globalization.DateTimeFormatInfo.InvariantInfo, 
+                System.Globalization.DateTimeStyles.AdjustToUniversal, 
+                out dateTime);
         }
 
         private static StringBuilder CreateNormalizedDate(string[] dmyhmsz)
