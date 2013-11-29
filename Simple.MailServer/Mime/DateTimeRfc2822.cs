@@ -180,7 +180,7 @@ namespace Simple.MailServer.Mime
 
         private static string RemoveBrackets(string dateStr)
         {
-            // Remove () from date. "Mon, 13 Oct 2003 20:50:57 +0300 (GMT)"
+            // Remove () from date. "Mon, 13 Oct 2003 20:50:57 -0400 (EDT)"
             if (dateStr.IndexOf(" (", StringComparison.Ordinal) > -1)
                 dateStr = dateStr.Substring(0, dateStr.IndexOf(" (", StringComparison.Ordinal));
             return dateStr;
