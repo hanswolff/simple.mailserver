@@ -43,8 +43,8 @@ namespace Simple.MailServer.Smtp
         private ISmtpResponderFactory _defaultResponderFactory;
         public ISmtpResponderFactory DefaultResponderFactory
         {
-            get { return _defaultResponderFactory; }
-            set { _defaultResponderFactory = value ?? new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(Configuration); }
+            get { return _defaultResponderFactory ?? new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(Configuration); }
+            set { _defaultResponderFactory = value; }
         }
 
         public event EventHandler<SmtpConnectionEventArgs> ClientConnected = (sender, args) => MailServerLogger.Instance.Info("Client connected from " + args.Connection.RemoteEndPoint);
