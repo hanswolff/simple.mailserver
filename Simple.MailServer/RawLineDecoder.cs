@@ -70,6 +70,10 @@ namespace Simple.MailServer
                         RequestDisconnection(this, RequestDisconnectionEventArgs.Unexpected);
                         return;
                     }
+                    catch (TaskCanceledException)
+                    {
+                        return;
+                    }
                     catch (ObjectDisposedException)
                     {
                         return;
