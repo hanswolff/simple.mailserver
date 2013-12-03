@@ -66,7 +66,7 @@ namespace Simple.MailServer
         public async Task<byte[]> ReadLineAsync(CancellationToken cancellationToken)
         {
             var rawLine = await Reader.ReadLineAsync(cancellationToken);
-            RawLineReceived(this, new RawLineEventArgs(rawLine));
+            RawLineReceived(this, new RawLineEventArgs(rawLine ?? new byte[0]));
             return rawLine;
         }
 
@@ -78,7 +78,55 @@ namespace Simple.MailServer
 
         public virtual void Disconnect()
         {
-            TcpClient.Close();
+            try
+            {
+                NetworkStream.Close();
+                TcpClient.Close();
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch
+            {
+                // ignore
+            }
         }
+
+        #region Dispose
+        private bool _disposed;
+        private readonly object _disposeLock = new object();
+
+        /// <summary>
+        /// Inheritable dispose method
+        /// </summary>
+        /// <param name="disposing">true, suppress GC finalizer call</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            lock (_disposeLock)
+            {
+                if (!_disposed)
+                {
+                    Disconnect();
+
+                    _disposed = true;
+                    if (disposing) GC.SuppressFinalize(this);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Free resources being used
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Destructor
+        /// </summary>
+        ~BaseConnection()
+        {
+            Dispose(false);
+        }
+        #endregion
     }
 }
