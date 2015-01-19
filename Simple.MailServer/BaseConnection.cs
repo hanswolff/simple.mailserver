@@ -72,8 +72,11 @@ namespace Simple.MailServer
 
         public async Task WriteLineAsyncAndFireEvents(string line)
         {
-            RawLineSent(this, new RawLineEventArgs(Writer.Encoding.GetBytes(line)));
-            await Writer.WriteLineAsync(line);
+            if (Writer.BaseStream.CanWrite)
+            {
+                RawLineSent(this, new RawLineEventArgs(Writer.Encoding.GetBytes(line)));            
+                await TextWriter.Synchronized(Writer).WriteLineAsync(line);
+            }
         }
 
         public virtual void Disconnect()
