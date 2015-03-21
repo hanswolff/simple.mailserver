@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ namespace Simple.MailServer.Tests.Smtp
 {
     public class SmtpServerFacts
     {
-        [Fact(Timeout = 2000)]
+        [Fact]
         public void SmtpServer_should_be_able_to_receive_mail_from_SmtpClient()
         {
             var testPort = GetTestPort();

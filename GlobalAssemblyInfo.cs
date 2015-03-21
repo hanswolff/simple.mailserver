@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ using System.Reflection;
 
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Simple.MailServer")]
-[assembly: AssemblyCopyright("Copyright © 2013 Hans Wolff")]
+[assembly: AssemblyCopyright("Copyright © 2013-2015 Hans Wolff")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -38,5 +38,5 @@ using System.Reflection;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.9.3.2")]
-[assembly: AssemblyFileVersion("0.9.3.2")]
+[assembly: AssemblyVersion("0.9.3.3")]
+[assembly: AssemblyFileVersion("0.9.3.3")]

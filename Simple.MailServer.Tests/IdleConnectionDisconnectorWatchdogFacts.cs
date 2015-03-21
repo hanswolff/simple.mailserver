@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ namespace Simple.MailServer.Tests
             connection.Verify(x => x.Disconnect(), Times.Never);
         }
 
-        [Fact(Timeout = 1000)]
+        [Fact]
         public void watchdog_should_disconnect_if_idle_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
@@ -85,7 +85,7 @@ namespace Simple.MailServer.Tests
             Assert.True(terminatingConnection);
         }
 
-        [Fact(Timeout = 1000)]
+        [Fact]
         public void watchdog_should_disconnect_if_connection_timeout_is_reached()
         {
             var server = new ServerConnectionsStub();
