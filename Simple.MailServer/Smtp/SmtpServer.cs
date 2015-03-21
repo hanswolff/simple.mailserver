@@ -29,6 +29,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Simple.MailServer.Mime;
 
 namespace Simple.MailServer.Smtp
 {
@@ -40,10 +41,16 @@ namespace Simple.MailServer.Smtp
         public ConcurrentDictionary<EndPoint, SmtpConnection> Connections { get; protected set; }
         public ISmtpServerConfiguration Configuration { get; set; }
 
+        public IEmailValidator EmailValidator
+        {
+            get { return _emailValidator ?? (_emailValidator = new XamarinEmailValidator()); }
+            set { _emailValidator = value; }
+        }
+
         private ISmtpResponderFactory _defaultResponderFactory;
         public ISmtpResponderFactory DefaultResponderFactory
         {
-            get { return _defaultResponderFactory ?? new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(Configuration); }
+            get { return _defaultResponderFactory ?? (_defaultResponderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(Configuration, EmailValidator)); }
             set { _defaultResponderFactory = value; }
         }
 
@@ -132,6 +139,7 @@ namespace Simple.MailServer.Smtp
         }
 
         private readonly object _bindAndListenLock = new object();
+        private IEmailValidator _emailValidator;
 
         public PortListener BindAndListenTo(IPAddress serverListenAddress, int serverPort)
         {

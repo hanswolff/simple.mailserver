@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
 // THE SOFTWARE.
 #endregion
 
+using System;
+using Simple.MailServer.Mime;
 using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
@@ -27,15 +29,25 @@ namespace Simple.MailServer.Smtp
     public class DefaultSmtpResponderFactory<T> : ISmtpResponderFactory where T : IConfiguredSmtpRestrictions
     {
         private readonly T _configuration;
+        private readonly IEmailValidator _emailValidator;
 
         public DefaultSmtpResponderFactory(T configuration)
+            : this(configuration, new XamarinEmailValidator())
         {
+        }
+
+        public DefaultSmtpResponderFactory(T configuration, IEmailValidator emailValidator)
+        {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            if (emailValidator == null) throw new ArgumentNullException("emailValidator");
+
             _configuration = configuration;
+            _emailValidator = emailValidator;
 
             _dataResponder = new DefaultSmtpDataResponder<T>(_configuration);
             _identificationResponder = new DefaultSmtpIdentificationResponder<T>(_configuration);
-            _mailFromResponder = new DefaultSmtpMailFromResponder<T>(_configuration);
-            _recipientToResponder = new DefaultSmtpRecipientToResponder<T>(_configuration);
+            _mailFromResponder = new DefaultSmtpMailFromResponder<T>(_configuration, emailValidator);
+            _recipientToResponder = new DefaultSmtpRecipientToResponder<T>(_configuration, emailValidator);
             _rawLineResponder = new DefaultSmtpRawLineResponder<T>(_configuration);
             _resetResponder = new DefaultSmtpResetResponder<T>(_configuration);
             _verifyResponder = new DefaultSmtpVerifyResponder<T>(_configuration);
@@ -59,14 +71,14 @@ namespace Simple.MailServer.Smtp
         public IRespondToSmtpMailFrom MailFromResponder
         {
             get { return _mailFromResponder; }
-            set { _mailFromResponder = value ?? new DefaultSmtpMailFromResponder<T>(_configuration); }
+            set { _mailFromResponder = value ?? new DefaultSmtpMailFromResponder<T>(_configuration, _emailValidator); }
         }
 
         private IRespondToSmtpRecipientTo _recipientToResponder;
         public IRespondToSmtpRecipientTo RecipientToResponder
         {
             get { return _recipientToResponder; }
-            set { _recipientToResponder = value ?? new DefaultSmtpRecipientToResponder<T>(_configuration); }
+            set { _recipientToResponder = value ?? new DefaultSmtpRecipientToResponder<T>(_configuration, _emailValidator); }
         }
 
         private IRespondToSmtpRawLine _rawLineResponder;

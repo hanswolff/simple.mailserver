@@ -25,6 +25,7 @@ using Simple.MailServer.Smtp;
 using Simple.MailServer.Smtp.Config;
 using System;
 using System.Net;
+using Simple.MailServer.Mime;
 
 namespace Simple.MailServer.Example
 {

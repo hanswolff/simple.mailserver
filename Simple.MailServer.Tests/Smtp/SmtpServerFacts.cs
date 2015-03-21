@@ -27,6 +27,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Moq;
+using Simple.MailServer.Mime;
 using Xunit;
 
 namespace Simple.MailServer.Tests.Smtp
@@ -36,12 +38,15 @@ namespace Simple.MailServer.Tests.Smtp
         [Fact]
         public void SmtpServer_should_be_able_to_receive_mail_from_SmtpClient()
         {
+            var mockEmailValidator = new Mock<IEmailValidator>();
+            mockEmailValidator.Setup(x => x.Validate(It.IsAny<string>())).Returns(true);
+
             var testPort = GetTestPort();
             var mailDataCollector = new TestMailDataCollector();
 
             using (var smtpServer = new SmtpServer())
             {
-                var responderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration) { DataResponder = mailDataCollector };
+                var responderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration, mockEmailValidator.Object) { DataResponder = mailDataCollector };
                 smtpServer.DefaultResponderFactory = responderFactory;
                 smtpServer.BindAndListenTo(IPAddress.Loopback, testPort);
 
@@ -50,6 +55,8 @@ namespace Simple.MailServer.Tests.Smtp
                         TaskCreationOptions.LongRunning);
 
                 Assert.True(sendMailTask.Wait(1500));
+                mockEmailValidator.Verify(x => x.Validate("mail@from.me"));
+                mockEmailValidator.Verify(x => x.Validate("mail@to.you"));
 
                 var mailData = mailDataCollector.MailData;
                 Assert.Contains("mail@from.me", mailData);
@@ -107,6 +114,5 @@ namespace Simple.MailServer.Tests.Smtp
         }
 
         #endregion
-
     }
 }

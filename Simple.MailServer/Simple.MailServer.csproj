@@ -56,7 +56,8 @@
     <Compile Include="ISession.cs" />
     <Compile Include="Logging\MailServerConsoleLogger.cs" />
     <Compile Include="Logging\MailServerLogLevel.cs" />
-    <Compile Include="Mime\EmailValidator.cs" />
+    <Compile Include="Mime\XamarinEmailValidator.cs" />
+    <Compile Include="Mime\IEmailValidator.cs" />
     <Compile Include="RawLineEventArgs.cs" />
     <Compile Include="RequestDisconnectionEventArgs.cs" />
     <Compile Include="SessionEventArgs.cs" />

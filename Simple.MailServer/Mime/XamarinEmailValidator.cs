@@ -23,9 +23,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace Simple.MailServer.Mime
 {
-    public static class EmailValidator
+    public class XamarinEmailValidator : IEmailValidator
+    {
+        public bool AllowInternational { get; set; }
+
+        public bool Validate(string email)
+        {
+            return EmailValidator.Validate(email, AllowInternational);
+        }
+    }
+
+    static class EmailValidator
     {
         const string AtomCharacters = "!#$%&'*+-/=?^_`{|}~";
 
@@ -34,42 +46,42 @@ namespace Simple.MailServer.Mime
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
         }
 
-        static bool IsAtom(char c)
+        static bool IsAtom(char c, bool allowInternational)
         {
-            return IsLetterOrDigit(c) || AtomCharacters.IndexOf(c) != -1;
+            return c < 128 ? IsLetterOrDigit(c) || AtomCharacters.IndexOf(c) != -1 : allowInternational;
         }
 
-        static bool IsDomain(char c)
+        static bool IsDomain(char c, bool allowInternational)
         {
-            return IsLetterOrDigit(c) || c == '-';
+            return c < 128 ? IsLetterOrDigit(c) || c == '-' : allowInternational;
         }
 
-        static bool SkipAtom(string text, ref int index)
+        static bool SkipAtom(string text, ref int index, bool allowInternational)
         {
             int startIndex = index;
 
-            while (index < text.Length && IsAtom(text[index]))
+            while (index < text.Length && IsAtom(text[index], allowInternational))
                 index++;
 
             return index > startIndex;
         }
 
-        static bool SkipSubDomain(string text, ref int index)
+        static bool SkipSubDomain(string text, ref int index, bool allowInternational)
         {
-            if (!IsDomain(text[index]) || text[index] == '-')
+            if (!IsDomain(text[index], allowInternational) || text[index] == '-')
                 return false;
 
             index++;
 
-            while (index < text.Length && IsDomain(text[index]))
+            while (index < text.Length && IsDomain(text[index], allowInternational))
                 index++;
 
             return true;
         }
 
-        static bool SkipDomain(string text, ref int index)
+        static bool SkipDomain(string text, ref int index, bool allowInternational)
         {
-            if (!SkipSubDomain(text, ref index))
+            if (!SkipSubDomain(text, ref index, allowInternational))
                 return false;
 
             while (index < text.Length && text[index] == '.')
@@ -79,14 +91,14 @@ namespace Simple.MailServer.Mime
                 if (index == text.Length)
                     return false;
 
-                if (!SkipSubDomain(text, ref index))
+                if (!SkipSubDomain(text, ref index, allowInternational))
                     return false;
             }
 
             return true;
         }
 
-        static bool SkipQuoted(string text, ref int index)
+        static bool SkipQuoted(string text, ref int index, bool allowInternational)
         {
             bool escaped = false;
 
@@ -95,13 +107,16 @@ namespace Simple.MailServer.Mime
 
             while (index < text.Length)
             {
-                if (text[index] == (byte)'\\')
+                if (text[index] >= 128 && !allowInternational)
+                    return false;
+
+                if (text[index] == '\\')
                 {
                     escaped = !escaped;
                 }
                 else if (!escaped)
                 {
-                    if (text[index] == (byte)'"')
+                    if (text[index] == '"')
                         break;
                 }
                 else
@@ -112,7 +127,7 @@ namespace Simple.MailServer.Mime
                 index++;
             }
 
-            if (index >= text.Length || text[index] != (byte)'"')
+            if (index >= text.Length || text[index] != '"')
                 return false;
 
             index++;
@@ -120,12 +135,12 @@ namespace Simple.MailServer.Mime
             return true;
         }
 
-        static bool SkipWord(string text, ref int index)
+        static bool SkipWord(string text, ref int index, bool allowInternational)
         {
-            if (text[index] == (byte)'"')
-                return SkipQuoted(text, ref index);
+            if (text[index] == '"')
+                return SkipQuoted(text, ref index, allowInternational);
 
-            return SkipAtom(text, ref index);
+            return SkipAtom(text, ref index, allowInternational);
         }
 
         static bool SkipIPv4Literal(string text, ref int index)
@@ -242,23 +257,35 @@ namespace Simple.MailServer.Mime
         /// <summary>
         /// Validate the specified email address.
         /// </summary>
+        /// <remarks>
+        /// <para>Validates the syntax of an email address.</para>
+        /// <para>If <paramref name="allowInternational"/> is <value>true</value>, then the validator
+        /// will use the newer International Email standards for validating the email address.</para>
+        /// </remarks>
         /// <returns><c>true</c> if the email address is valid; otherwise <c>false</c>.</returns>
         /// <param name="email">An email address.</param>
-        public static bool Validate(string email)
+        /// <param name="allowInternational"><value>true</value> if the validator should allow international characters; otherwise, <value>false</value>.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// <paramref name="email"/> is <c>null</c>.
+        /// </exception>
+        public static bool Validate(string email, bool allowInternational = false)
         {
             int index = 0;
+
+            if (email == null)
+                throw new ArgumentNullException("email");
 
             if (email.Length == 0)
                 return false;
 
-            if (!SkipWord(email, ref index) || index >= email.Length)
+            if (!SkipWord(email, ref index, allowInternational) || index >= email.Length)
                 return false;
 
             while (index < email.Length && email[index] == '.')
             {
                 index++;
 
-                if (!SkipWord(email, ref index) || index >= email.Length)
+                if (!SkipWord(email, ref index, allowInternational) || index >= email.Length)
                     return false;
             }
 
@@ -268,7 +295,7 @@ namespace Simple.MailServer.Mime
             if (email[index] != '[')
             {
                 // domain
-                if (!SkipDomain(email, ref index))
+                if (!SkipDomain(email, ref index, allowInternational))
                     return false;
 
                 return index == email.Length;

@@ -20,6 +20,7 @@
 // THE SOFTWARE.
 #endregion
 
+using Simple.MailServer.Mime;
 using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
@@ -27,14 +28,19 @@ namespace Simple.MailServer.Smtp
     public class DefaultSmtpRecipientToResponder<T> : IRespondToSmtpRecipientTo where T : IConfiguredSmtpRestrictions
     {
         protected readonly T Configuration;
+        private readonly IEmailValidator _emailValidator;
 
-        public DefaultSmtpRecipientToResponder(T configuration)
+        public DefaultSmtpRecipientToResponder(T configuration, IEmailValidator emailValidator)
         {
             Configuration = configuration;
+            _emailValidator = emailValidator;
         }
 
         public SmtpResponse VerifyRecipientTo(SmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
         {
+            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
+                return SmtpResponse.SyntaxError;
+
             return SmtpResponse.OK;
         }
     }
