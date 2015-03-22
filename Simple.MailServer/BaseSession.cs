@@ -38,24 +38,21 @@ namespace Simple.MailServer
         public object Tag { get; set; }
 
         protected readonly Stopwatch Stopwatch = Stopwatch.StartNew();
-        protected long LastActivity;
 
-        public long GetIdleTimeMilliseconds()
+        public TimeSpan GetIdleTime()
         {
-            var lastActivity = Interlocked.Read(ref LastActivity);
-            return Stopwatch.ElapsedMilliseconds - lastActivity;
+            return Stopwatch.Elapsed;
         }
 
         internal BaseSession(BaseConnection connection)
         {
             Active = true;
             Connection = connection;
-            LastActivity = Stopwatch.ElapsedMilliseconds;            
         }
 
         public void UpdateActivity()
         {
-            Interlocked.Exchange(ref LastActivity, Stopwatch.ElapsedMilliseconds);
+            Stopwatch.Restart();
         }
 
         public void Disconnect()

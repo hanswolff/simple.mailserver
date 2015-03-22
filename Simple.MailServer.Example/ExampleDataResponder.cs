@@ -28,7 +28,7 @@ using System.Text;
 
 namespace Simple.MailServer.Example
 {
-    class ExampleDataResponder : SmtpDataResponder<ISmtpServerConfiguration>
+    class ExampleDataResponder : SmtpDataResponder
     {
         private readonly string _mailDir;
 

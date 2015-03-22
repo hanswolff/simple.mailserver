@@ -1,5 +1,5 @@
 #region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,22 +36,22 @@ namespace Simple.MailServer.Smtp.Config
             set { _defaultGreeting = value; FireConfigurationChanged(); }
         }
 
-        private long _globalConnectionTimeout = 600000;
+        private TimeSpan _globalConnectionTimeout = TimeSpan.FromMinutes(10);
         /// <summary>
-        /// Maximum total number of milliseconds for a connection session before being disconnected
+        /// Maximum time for a connection session before being disconnected
         /// </summary>
-        public long GlobalConnectionTimeout
+        public TimeSpan GlobalConnectionTimeout
         {
             get { return _globalConnectionTimeout; }
             set { _globalConnectionTimeout = value; FireConfigurationChanged(); }
         }
 
-        private long _connectionIdleTimeout = 60000;
+        private TimeSpan _connectionIdleTimeout = TimeSpan.FromSeconds(60);
 
         /// <summary>
-        /// Maximum total number of milliseconds for an idle connection session before being disconnected
+        /// Maximum time for an idle connection session before being disconnected
         /// </summary>
-        public long ConnectionIdleTimeout
+        public TimeSpan ConnectionIdleTimeout
         {
             get { return _connectionIdleTimeout; }
             set { _connectionIdleTimeout = value; FireConfigurationChanged(); }

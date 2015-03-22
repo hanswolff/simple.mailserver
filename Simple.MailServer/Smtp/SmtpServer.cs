@@ -50,7 +50,7 @@ namespace Simple.MailServer.Smtp
         private ISmtpResponderFactory _defaultResponderFactory;
         public ISmtpResponderFactory DefaultResponderFactory
         {
-            get { return _defaultResponderFactory ?? (_defaultResponderFactory = new SmtpResponderFactory<ISmtpServerConfiguration>(Configuration, EmailValidator)); }
+            get { return _defaultResponderFactory ?? (_defaultResponderFactory = new SmtpResponderFactory(Configuration, EmailValidator)); }
             set { _defaultResponderFactory = value; }
         }
 
@@ -82,8 +82,8 @@ namespace Simple.MailServer.Smtp
             Configuration.ConfigurationChanged +=
                 c =>
                 {
-                    Watchdog.ConnectionTimeoutMilliseconds = c.GlobalConnectionTimeout;
-                    Watchdog.IdleTimeoutMilliseconds = c.ConnectionIdleTimeout;
+                    Watchdog.ConnectionTimeout = c.GlobalConnectionTimeout;
+                    Watchdog.IdleTimeout = c.ConnectionIdleTimeout;
                 };
         }
 

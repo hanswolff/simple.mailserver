@@ -31,7 +31,7 @@ namespace Simple.MailServer.Tests
         public void GetIdleTimeMilliseconds_starts_at_zero()
         {
             var session = new BaseSession(null);
-            Assert.InRange(session.GetIdleTimeMilliseconds(), 0, 10);
+            Assert.InRange(session.GetIdleTime().TotalMilliseconds, 0, 15);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Simple.MailServer.Tests
         {
             var session = new BaseSession(null);
             Thread.Sleep(20);
-            Assert.InRange(session.GetIdleTimeMilliseconds(), 10, 100);
+            Assert.InRange(session.GetIdleTime().TotalMilliseconds, 15, 100);
         }
     }
 }

@@ -26,12 +26,12 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpMailFromResponder<T> : IRespondToSmtpMailFrom where T : IConfiguredSmtpRestrictions
+    public class SmtpMailFromResponder : IRespondToSmtpMailFrom
     {
-        protected readonly T Configuration;
+        protected readonly IConfiguredSmtpRestrictions Configuration;
         private readonly IEmailValidator _emailValidator;
 
-        public SmtpMailFromResponder(T configuration, IEmailValidator emailValidator)
+        public SmtpMailFromResponder(IConfiguredSmtpRestrictions configuration, IEmailValidator emailValidator)
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
             if (emailValidator == null) throw new ArgumentNullException("emailValidator");

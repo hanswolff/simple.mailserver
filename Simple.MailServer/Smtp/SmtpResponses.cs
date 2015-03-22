@@ -43,5 +43,6 @@ namespace Simple.MailServer.Smtp
         public static SmtpResponse VrfyMissingArguments = new SmtpResponse(501, "VRFY Missing parameter.");
         public static SmtpResponse UseMailFromFirst = new SmtpResponse(502, "5.5.1 Use MAIL FROM first.");
         public static SmtpResponse MustHaveRecipientFirst = new SmtpResponse(503, "5.5.1 Must have recipient first");
+        public static SmtpResponse VerifyDummyResponse = new SmtpResponse(252, "2.5.2 Send some mail, I'll try my best");
     }
 }

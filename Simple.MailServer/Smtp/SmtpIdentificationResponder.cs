@@ -20,29 +20,38 @@
 // THE SOFTWARE.
 #endregion
 
+using System;
+using System.Linq;
+using Simple.MailServer.Smtp.Capabilities;
 using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpIdentificationResponder<T> : IRespondToSmtpIdentification where T : IConfiguredSmtpRestrictions
+    public class SmtpIdentificationResponder : IRespondToSmtpIdentification
     {
-        protected readonly T Configuration;
+        protected readonly IConfiguredSmtpRestrictions Configuration;
+        private readonly IGetSmtpCapabilities _getSmtpCapabilities;
 
-        public SmtpIdentificationResponder(T configuration)
+        public SmtpIdentificationResponder(IConfiguredSmtpRestrictions configuration, IGetSmtpCapabilities getSmtpCapabilities)
         {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            if (getSmtpCapabilities == null) throw new ArgumentNullException("getSmtpCapabilities");
+
             Configuration = configuration;
+            _getSmtpCapabilities = getSmtpCapabilities;
         }
 
         public virtual SmtpResponse VerifyIdentification(ISmtpSessionInfo sessionInfo, SmtpIdentification smtpIdentification)
         {
-            if (smtpIdentification.Mode == SmtpIdentificationMode.HELO)
-            {
-                return VerifyHelo();
-            }
+            if (smtpIdentification == null) throw new ArgumentNullException("smtpIdentification");
 
-            if (smtpIdentification.Mode == SmtpIdentificationMode.EHLO)
+            switch (smtpIdentification.Mode)
             {
-                return VerifyEhlo();
+                case SmtpIdentificationMode.HELO:
+                    return VerifyHelo();
+
+                case SmtpIdentificationMode.EHLO:
+                    return VerifyEhlo();
             }
 
             return new SmtpResponse(500, "Invalid Identification (" + smtpIdentification.Mode + ")");
@@ -55,7 +64,14 @@ namespace Simple.MailServer.Smtp
 
         private SmtpResponse VerifyEhlo()
         {
-            var response = new SmtpResponse(250, "SIZE " + Configuration.MaxMailMessageSize, new[] { "250-PIPELINING" });
+            var smtpCapabilities = _getSmtpCapabilities.GetCapabilities().ToList();
+
+            if (!smtpCapabilities.Any())
+                return SmtpResponses.OK;
+
+            var additionalLines = smtpCapabilities.Skip(1).Select(capability => "250-" + capability).ToList();
+
+            var response = new SmtpResponse(250, smtpCapabilities.First().ToString(), additionalLines);
             return response;
         }
     }

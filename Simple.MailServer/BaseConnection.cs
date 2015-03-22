@@ -61,7 +61,7 @@ namespace Simple.MailServer
             RemoteEndPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
         }
 
-        public abstract long GetIdleTimeMilliseconds();
+        public abstract TimeSpan GetIdleTime();
 
         public async Task<byte[]> ReadLineAsync(CancellationToken cancellationToken)
         {

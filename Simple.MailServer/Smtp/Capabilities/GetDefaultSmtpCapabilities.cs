@@ -20,28 +20,28 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Mime;
+using System;
+using System.Collections.Generic;
 using Simple.MailServer.Smtp.Config;
 
-namespace Simple.MailServer.Smtp
+namespace Simple.MailServer.Smtp.Capabilities
 {
-    public class SmtpRecipientToResponder : IRespondToSmtpRecipientTo
+    class GetDefaultSmtpCapabilities : IGetSmtpCapabilities
     {
-        protected readonly IConfiguredSmtpRestrictions Configuration;
-        private readonly IEmailValidator _emailValidator;
+        private readonly IConfiguredSmtpRestrictions _configuration;
 
-        public SmtpRecipientToResponder(IConfiguredSmtpRestrictions configuration, IEmailValidator emailValidator)
+        public GetDefaultSmtpCapabilities(IConfiguredSmtpRestrictions configuration)
         {
-            Configuration = configuration;
-            _emailValidator = emailValidator;
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            _configuration = configuration;
         }
 
-        public SmtpResponse VerifyRecipientTo(ISmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
+        public IEnumerable<SmtpCapability> GetCapabilities()
         {
-            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
-                return SmtpResponses.SyntaxError;
+            yield return SmtpCapabilities.Pipelining;
 
-            return SmtpResponses.OK;
+            if (_configuration.MaxMailMessageSize > 0)
+                yield return SmtpCapabilities.MaxSizePerEmail(_configuration.MaxMailMessageSize);
         }
     }
 }

@@ -32,8 +32,10 @@ namespace Simple.MailServer
 
         public T Server { get; private set; }
 
-        public long ConnectionTimeoutMilliseconds { get; set; }
-        public long IdleTimeoutMilliseconds { get; set; }
+        public TimeSpan ConnectionTimeout { get; set; }
+        public TimeSpan IdleTimeout { get; set; }
+
+        public Func<DateTime> FuncTimeSource = () => DateTime.UtcNow;
 
         public event EventHandler<ClientConnectionEventArgs> TerminatingConnection = (s, e) => { };
 
@@ -85,28 +87,29 @@ namespace Simple.MailServer
             TimerCall();
         }
 
+        private static readonly TimeSpan NoTimeout = new TimeSpan(-1);
+
         public void TimerCall()
         {
             if (_timer == null) return;
 
             var connections = Server.GetConnections().ToList();
 
-            var connectionTimeout = ConnectionTimeoutMilliseconds;
-            var idleTimeout = IdleTimeoutMilliseconds;
+            var connectionTimeout = ConnectionTimeout;
+            var idleTimeout = IdleTimeout;
 
-            for (int i = connections.Count - 1; i >= 0; i--)
+            for (var i = connections.Count - 1; i >= 0; i--)
             {
                 var connection = connections[i];
 
-                if (connectionTimeout > 0 &&
-                    (DateTime.UtcNow - connection.ConnectionInitiated).TotalMilliseconds >= connectionTimeout)
+                if (connectionTimeout != NoTimeout && (FuncTimeSource() - connection.ConnectionInitiated) > connectionTimeout)
                 {
                     TerminatingConnection(this, new ClientConnectionEventArgs(connection));
                     connection.Disconnect();
                     continue;
                 }
 
-                if (idleTimeout > 0 && (connection.GetIdleTimeMilliseconds() >= idleTimeout))
+                if (idleTimeout != NoTimeout && connection.GetIdleTime() > idleTimeout)
                 {
                     TerminatingConnection(this, new ClientConnectionEventArgs(connection));
                     connection.Disconnect();

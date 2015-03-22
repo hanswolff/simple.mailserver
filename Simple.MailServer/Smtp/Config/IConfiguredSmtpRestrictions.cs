@@ -25,5 +25,6 @@ namespace Simple.MailServer.Smtp.Config
 {
     public interface IConfiguredSmtpRestrictions : IConfigMaxMailMessageSize
     {
+        long MaxNumberOfRecipients { get; set; }
     }
 }

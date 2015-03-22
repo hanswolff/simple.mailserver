@@ -24,17 +24,19 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpResetResponder<T> : IRespondToSmtpReset where T : IConfiguredSmtpRestrictions
+    public class SmtpResetResponder : IRespondToSmtpReset
     {
-        protected readonly T Configuration;
+        protected readonly IConfiguredSmtpRestrictions Configuration;
 
-        public SmtpResetResponder(T configuration)
+        public SmtpResetResponder(IConfiguredSmtpRestrictions configuration)
         {
             Configuration = configuration;
         }
 
         public SmtpResponse Reset(ISmtpSessionInfo sessionInfo)
         {
+            sessionInfo.Reset();
+
             return SmtpResponses.OK;
         }
     }

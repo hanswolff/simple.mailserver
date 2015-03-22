@@ -28,7 +28,6 @@ using Moq;
 using Simple.MailServer.Mime;
 using Simple.MailServer.Tests.Helpers;
 using Simple.MailServer.Smtp;
-using Simple.MailServer.Smtp.Config;
 using Xunit;
 
 namespace Simple.MailServer.Tests.Smtp
@@ -46,7 +45,7 @@ namespace Simple.MailServer.Tests.Smtp
 
             using (var smtpServer = new SmtpServer())
             {
-                var responderFactory = new SmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration, mockEmailValidator.Object) { DataResponder = mailDataCollector };
+                var responderFactory = new SmtpResponderFactory(smtpServer.Configuration, mockEmailValidator.Object) { DataResponder = mailDataCollector };
                 smtpServer.DefaultResponderFactory = responderFactory;
                 smtpServer.BindAndListenTo(IPAddress.Loopback, testPort);
 

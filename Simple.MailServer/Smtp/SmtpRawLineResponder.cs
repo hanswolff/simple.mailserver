@@ -24,11 +24,11 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpRawLineResponder<T> : IRespondToSmtpRawLine where T : IConfiguredSmtpRestrictions
+    public class SmtpRawLineResponder : IRespondToSmtpRawLine
     {
-        protected readonly T Configuration;
+        protected readonly IConfiguredSmtpRestrictions Configuration;
 
-        public SmtpRawLineResponder(T configuration)
+        public SmtpRawLineResponder(IConfiguredSmtpRestrictions configuration)
         {
             Configuration = configuration;
         }

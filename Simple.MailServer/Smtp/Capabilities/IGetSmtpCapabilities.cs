@@ -20,28 +20,12 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Mime;
-using Simple.MailServer.Smtp.Config;
+using System.Collections.Generic;
 
-namespace Simple.MailServer.Smtp
+namespace Simple.MailServer.Smtp.Capabilities
 {
-    public class SmtpRecipientToResponder : IRespondToSmtpRecipientTo
+    public interface IGetSmtpCapabilities
     {
-        protected readonly IConfiguredSmtpRestrictions Configuration;
-        private readonly IEmailValidator _emailValidator;
-
-        public SmtpRecipientToResponder(IConfiguredSmtpRestrictions configuration, IEmailValidator emailValidator)
-        {
-            Configuration = configuration;
-            _emailValidator = emailValidator;
-        }
-
-        public SmtpResponse VerifyRecipientTo(ISmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
-        {
-            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
-                return SmtpResponses.SyntaxError;
-
-            return SmtpResponses.OK;
-        }
+        IEnumerable<SmtpCapability> GetCapabilities();
     }
 }

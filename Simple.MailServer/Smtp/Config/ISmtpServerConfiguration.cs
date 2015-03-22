@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,8 @@ namespace Simple.MailServer.Smtp.Config
     public interface ISmtpServerConfiguration : IConfiguredSmtpRestrictions
     {
         string DefaultGreeting { get; set; }
-        long GlobalConnectionTimeout { get; set; }
-        long ConnectionIdleTimeout { get; set; }
-        long MaxNumberOfRecipients { get; set; }
+        TimeSpan GlobalConnectionTimeout { get; set; }
+        TimeSpan ConnectionIdleTimeout { get; set; }
 
         event Action<ISmtpServerConfiguration> ConfigurationChanged;
     }

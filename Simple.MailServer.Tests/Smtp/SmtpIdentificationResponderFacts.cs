@@ -20,28 +20,34 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Mime;
+using Moq;
+using Simple.MailServer.Smtp;
+using Simple.MailServer.Smtp.Capabilities;
 using Simple.MailServer.Smtp.Config;
+using Xunit;
 
-namespace Simple.MailServer.Smtp
+namespace Simple.MailServer.Tests.Smtp
 {
-    public class SmtpRecipientToResponder : IRespondToSmtpRecipientTo
+    public class SmtpIdentificationResponderFacts
     {
-        protected readonly IConfiguredSmtpRestrictions Configuration;
-        private readonly IEmailValidator _emailValidator;
-
-        public SmtpRecipientToResponder(IConfiguredSmtpRestrictions configuration, IEmailValidator emailValidator)
+        [Fact]
+        public void EHLO_respond_with_capabilities()
         {
-            Configuration = configuration;
-            _emailValidator = emailValidator;
-        }
+            var mockGetCapabilities = new Mock<IGetSmtpCapabilities>();
+            mockGetCapabilities.Setup(x => x.GetCapabilities())
+                .Returns(new[] { new SmtpCapability("CAP1", "param"), new SmtpCapability("CAP2"), new SmtpCapability("CAP3", "with parameter") });
 
-        public SmtpResponse VerifyRecipientTo(ISmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
-        {
-            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
-                return SmtpResponses.SyntaxError;
+            var responder = new SmtpIdentificationResponder(new Mock<IConfiguredSmtpRestrictions>().Object,
+                mockGetCapabilities.Object);
 
-            return SmtpResponses.OK;
+            var response = responder.VerifyIdentification(new Mock<ISmtpSessionInfo>().Object,
+                new SmtpIdentification(SmtpIdentificationMode.EHLO, "localhost"));
+
+            Assert.Equal(250, response.ResponseCode);
+            Assert.Equal("CAP1 param", response.ResponseText);
+
+            Assert.Equal("250-CAP2", response.AdditionalLines[0]);
+            Assert.Equal("250-CAP3 with parameter", response.AdditionalLines[1]);
         }
     }
 }

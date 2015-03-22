@@ -61,8 +61,12 @@
     <Compile Include="RawLineEventArgs.cs" />
     <Compile Include="RequestDisconnectionEventArgs.cs" />
     <Compile Include="SessionEventArgs.cs" />
+    <Compile Include="Smtp\Capabilities\GetDefaultSmtpCapabilities.cs" />
+    <Compile Include="Smtp\Capabilities\SmtpCapabilities.cs" />
     <Compile Include="Smtp\Config\IConfigMaxMailMessageSize.cs" />
     <Compile Include="Smtp\Config\IConfiguredSmtpRestrictions.cs" />
+    <Compile Include="Smtp\Capabilities\SmtpCapability.cs" />
+    <Compile Include="Smtp\Capabilities\IGetSmtpCapabilities.cs" />
     <Compile Include="Smtp\SmtpResponses.cs" />
     <Compile Include="Smtp\ISmtpResponderFactory.cs" />
     <Compile Include="Smtp\IRespondToSmtpRawLine.cs" />

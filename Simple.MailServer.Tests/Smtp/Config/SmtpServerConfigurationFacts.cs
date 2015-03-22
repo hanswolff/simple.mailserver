@@ -34,7 +34,7 @@ namespace Simple.MailServer.Tests.Smtp.Config
             var changedEventFired = false;
             var config = CreateWithConfigurationChangedEvent(() => changedEventFired = true);
 
-            config.ConnectionIdleTimeout = 0;
+            config.ConnectionIdleTimeout = TimeSpan.Zero;
             Assert.True(changedEventFired);
         }
 
@@ -54,7 +54,7 @@ namespace Simple.MailServer.Tests.Smtp.Config
             var changedEventFired = false;
             var config = CreateWithConfigurationChangedEvent(() => changedEventFired = true);
 
-            config.GlobalConnectionTimeout = 0;
+            config.GlobalConnectionTimeout = TimeSpan.Zero;
             Assert.True(changedEventFired);
         }
 

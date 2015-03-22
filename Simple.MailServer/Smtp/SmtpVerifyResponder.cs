@@ -24,18 +24,18 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpVerifyResponder<T> : IRespondToSmtpVerify where T : IConfiguredSmtpRestrictions
+    public class SmtpVerifyResponder : IRespondToSmtpVerify
     {
-        protected readonly T Configuration;
+        protected readonly IConfiguredSmtpRestrictions Configuration;
 
-        public SmtpVerifyResponder(T configuration)
+        public SmtpVerifyResponder(IConfiguredSmtpRestrictions configuration)
         {
             Configuration = configuration;
         }
 
         public SmtpResponse Verify(ISmtpSessionInfo sessionInfo, string arguments)
         {
-            return new SmtpResponse(252, "2.5.2 Send some mail, i'll try my best");
+            return SmtpResponses.VerifyDummyResponse;
         }
     }
 }

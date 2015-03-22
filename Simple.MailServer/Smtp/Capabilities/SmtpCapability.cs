@@ -20,28 +20,26 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Mime;
-using Simple.MailServer.Smtp.Config;
+using System;
 
-namespace Simple.MailServer.Smtp
+namespace Simple.MailServer.Smtp.Capabilities
 {
-    public class SmtpRecipientToResponder : IRespondToSmtpRecipientTo
+    public class SmtpCapability
     {
-        protected readonly IConfiguredSmtpRestrictions Configuration;
-        private readonly IEmailValidator _emailValidator;
+        public string Name { get; private set; }
+        public string OptionalParameter { get; private set; }
 
-        public SmtpRecipientToResponder(IConfiguredSmtpRestrictions configuration, IEmailValidator emailValidator)
+        public SmtpCapability(string name, string optionalParameter = null)
         {
-            Configuration = configuration;
-            _emailValidator = emailValidator;
+            if (name == null) throw new ArgumentNullException("name");
+            
+            Name = name;
+            OptionalParameter = optionalParameter;
         }
 
-        public SmtpResponse VerifyRecipientTo(ISmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
+        public override string ToString()
         {
-            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
-                return SmtpResponses.SyntaxError;
-
-            return SmtpResponses.OK;
+            return Name + (String.IsNullOrEmpty(OptionalParameter) ? "" : " " + OptionalParameter);
         }
     }
 }

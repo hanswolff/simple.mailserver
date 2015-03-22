@@ -34,10 +34,10 @@ namespace Simple.MailServer.Smtp
         public event EventHandler<SmtpConnectionEventArgs> ClientDisconnected = (s, c) => {};
         public event EventHandler<SmtpSessionEventArgs> SessionCreated = (sender, args) => MailServerLogger.Instance.Debug("Session created for " + args.Session.Connection.RemoteEndPoint);
 
-        public override long GetIdleTimeMilliseconds()
+        public override TimeSpan GetIdleTime()
         {
             var session = Session;
-            return session != null ? session.GetIdleTimeMilliseconds() : 0;
+            return session != null ? session.GetIdleTime() : TimeSpan.Zero;
         }
 
         public SmtpConnection(SmtpServer server, PortListener portBinding, TcpClient tcpClient)

@@ -60,6 +60,7 @@
     <Compile Include="BaseSessionFacts.cs" />
     <Compile Include="Helpers\TestConnection.cs" />
     <Compile Include="Smtp\SmtpServerCommandsTests.cs" />
+    <Compile Include="Smtp\SmtpIdentificationResponderFacts.cs" />
     <Compile Include="XamarinEmailValidatorFacts.cs" />
     <Compile Include="IdleConnectionDisconnectorWatchdogFacts.cs" />
     <Compile Include="Logging\MailServerLoggerFacts.cs" />

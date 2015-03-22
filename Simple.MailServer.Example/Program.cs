@@ -54,7 +54,7 @@ namespace Simple.MailServer.Example
                 }
             };
             smtpServer.DefaultResponderFactory = 
-                new SmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration)
+                new SmtpResponderFactory(smtpServer.Configuration)
             {
                 DataResponder = new ExampleDataResponder(smtpServer.Configuration, RootMailDir)
                 // ... inject other responders here as needed (or leave default)
