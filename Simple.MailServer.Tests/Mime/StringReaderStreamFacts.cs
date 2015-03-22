@@ -25,6 +25,7 @@ using Simple.MailServer.Mime;
 using System;
 using System.IO;
 using System.Text;
+using Simple.MailServer.Tests.Helpers;
 using Xunit;
 using Xunit.Extensions;
 

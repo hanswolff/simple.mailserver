@@ -58,6 +58,8 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BaseSessionFacts.cs" />
+    <Compile Include="Helpers\TestConnection.cs" />
+    <Compile Include="Smtp\SmtpServerCommandsTests.cs" />
     <Compile Include="XamarinEmailValidatorFacts.cs" />
     <Compile Include="IdleConnectionDisconnectorWatchdogFacts.cs" />
     <Compile Include="Logging\MailServerLoggerFacts.cs" />
@@ -75,7 +77,7 @@
     <Compile Include="Smtp\SmtpResponseFacts.cs" />
     <Compile Include="Smtp\SmtpServerFacts.cs" />
     <Compile Include="Smtp\SmtpSessionInfoResponderFacts.cs" />
-    <Compile Include="TestHelpers.cs" />
+    <Compile Include="Helpers\TestHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Simple.MailServer\Simple.MailServer.csproj">

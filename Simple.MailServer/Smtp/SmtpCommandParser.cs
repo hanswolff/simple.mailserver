@@ -79,7 +79,7 @@ namespace Simple.MailServer.Smtp
             catch (Exception ex)
             {
                 MailServerLogger.Instance.Error(ex);
-                return SmtpResponse.InternalServerError;
+                return SmtpResponses.InternalServerError;
             }
         }
 
@@ -108,25 +108,25 @@ namespace Simple.MailServer.Smtp
                 return response;
             }
 
-            return SmtpResponse.NotImplemented;
+            return SmtpResponses.NotImplemented;
         }
 
         private static bool IsLineTooLong(byte[] lineBuf, out SmtpResponse smtpResponse)
         {
             if (lineBuf.Length > 2040)
             {
-                smtpResponse = SmtpResponse.LineTooLong;
+                smtpResponse = SmtpResponses.LineTooLong;
                 return true;
             }
 
-            smtpResponse = SmtpResponse.None;
+            smtpResponse = SmtpResponses.None;
             return false;
         }
 
         private bool ProcessRawLineHasResponse(string line, out SmtpResponse smtpResponse)
         {
             smtpResponse = ProcessRawLine(line);
-            return (smtpResponse != SmtpResponse.None);
+            return (smtpResponse != SmtpResponses.None);
         }
 
         private SmtpResponse ProcessLineInDataMode(byte[] lineBuf)

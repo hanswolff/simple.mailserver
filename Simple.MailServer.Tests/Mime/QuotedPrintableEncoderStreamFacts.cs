@@ -22,6 +22,7 @@
 
 using Simple.MailServer.Mime;
 using System.IO;
+using Simple.MailServer.Tests.Helpers;
 using Xunit;
 
 namespace Simple.MailServer.Tests.Mime

@@ -25,6 +25,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Simple.MailServer.Tests.Helpers;
 using Xunit;
 
 namespace Simple.MailServer.Tests
@@ -34,7 +35,7 @@ namespace Simple.MailServer.Tests
         [Fact]
         public void port_listener_is_listening_to_port()
         {
-            var testPort = GetTestPort();
+            var testPort = TestHelpers.GetTestPort();
             using (var portListener = new PortListener(IPAddress.Loopback, testPort))
             {
                 var clientConnectedRaised = new ManualResetEventSlim();
@@ -52,7 +53,7 @@ namespace Simple.MailServer.Tests
         [Fact]
         public void port_listener_cannot_start_twice()
         {
-            var testPort = GetTestPort();
+            var testPort = TestHelpers.GetTestPort();
             using (var portListener = new PortListener(IPAddress.Loopback, testPort))
             {
                 portListener.StartListen();
@@ -63,7 +64,7 @@ namespace Simple.MailServer.Tests
         [Fact]
         public void StartListen_then_StopListen_could_not_be_able_to_connect()
         {
-            var testPort = GetTestPort();
+            var testPort = TestHelpers.GetTestPort();
             using (var portListener = new PortListener(IPAddress.Loopback, testPort))
             {
                 portListener.StartListen();
@@ -91,26 +92,5 @@ namespace Simple.MailServer.Tests
                 }
             }
         }
-
-        #region
-
-        private int _testPort;
-        private int TestPort
-        {
-            get { return _testPort; }
-            set { _testPort = value; }
-        }
-
-        private int GetTestPort()
-        {
-            return Interlocked.Increment(ref _testPort);
-        }
-
-        public PortListenerFacts()
-        {
-            TestPort = new Random(Environment.TickCount).Next(10000, 65000);
-        }
-
-        #endregion
     }
 }

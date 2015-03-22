@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,28 @@
 // THE SOFTWARE.
 #endregion
 
+using Simple.MailServer.Mime;
 using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpResetResponder<T> : IRespondToSmtpReset where T : IConfiguredSmtpRestrictions
+    public class SmtpRecipientToResponder<T> : IRespondToSmtpRecipientTo where T : IConfiguredSmtpRestrictions
     {
         protected readonly T Configuration;
+        private readonly IEmailValidator _emailValidator;
 
-        public DefaultSmtpResetResponder(T configuration)
+        public SmtpRecipientToResponder(T configuration, IEmailValidator emailValidator)
         {
             Configuration = configuration;
+            _emailValidator = emailValidator;
         }
 
-        public SmtpResponse Reset(SmtpSessionInfo sessionInfo)
+        public SmtpResponse VerifyRecipientTo(ISmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
         {
-            return SmtpResponse.OK;
+            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
+                return SmtpResponses.SyntaxError;
+
+            return SmtpResponses.OK;
         }
     }
 }

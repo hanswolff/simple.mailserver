@@ -20,15 +20,15 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Smtp;
-using Simple.MailServer.Smtp.Config;
-using System;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
 using Simple.MailServer.Mime;
+using Simple.MailServer.Tests.Helpers;
+using Simple.MailServer.Smtp;
+using Simple.MailServer.Smtp.Config;
 using Xunit;
 
 namespace Simple.MailServer.Tests.Smtp
@@ -41,12 +41,12 @@ namespace Simple.MailServer.Tests.Smtp
             var mockEmailValidator = new Mock<IEmailValidator>();
             mockEmailValidator.Setup(x => x.Validate(It.IsAny<string>())).Returns(true);
 
-            var testPort = GetTestPort();
+            var testPort = TestHelpers.GetTestPort();
             var mailDataCollector = new TestMailDataCollector();
 
             using (var smtpServer = new SmtpServer())
             {
-                var responderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration, mockEmailValidator.Object) { DataResponder = mailDataCollector };
+                var responderFactory = new SmtpResponderFactory<ISmtpServerConfiguration>(smtpServer.Configuration, mockEmailValidator.Object) { DataResponder = mailDataCollector };
                 smtpServer.DefaultResponderFactory = responderFactory;
                 smtpServer.BindAndListenTo(IPAddress.Loopback, testPort);
 
@@ -54,7 +54,7 @@ namespace Simple.MailServer.Tests.Smtp
                     Task.Factory.StartNew(() => SendMail(testPort, "mail@from.me", "mail@to.you", "subject", "body"),
                         TaskCreationOptions.LongRunning);
 
-                Assert.True(sendMailTask.Wait(1500));
+                Assert.True(sendMailTask.Wait(3000));
                 mockEmailValidator.Verify(x => x.Validate("mail@from.me"));
                 mockEmailValidator.Verify(x => x.Validate("mail@to.you"));
 
@@ -76,33 +76,21 @@ namespace Simple.MailServer.Tests.Smtp
                 get { return _mailData.ToString(); }
             }
 
-            public SmtpResponse DataStart(SmtpSessionInfo sessionInfo)
+            public SmtpResponse DataStart(ISmtpSessionInfo sessionInfo)
             {
-                return SmtpResponse.DataStart;
+                return SmtpResponses.DataStart;
             }
 
-            public SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf)
+            public SmtpResponse DataLine(ISmtpSessionInfo sessionInfo, byte[] lineBuf)
             {
                 _mailData.AppendLine(Encoding.UTF8.GetString(lineBuf));
-                return SmtpResponse.None;
+                return SmtpResponses.None;
             }
 
-            public SmtpResponse DataEnd(SmtpSessionInfo sessionInfo)
+            public SmtpResponse DataEnd(ISmtpSessionInfo sessionInfo)
             {
-                return SmtpResponse.OK;
+                return SmtpResponses.OK;
             }
-        }
-
-        int TestPort { get; set; }
-
-        private int GetTestPort()
-        {
-            return TestPort++;
-        }
-
-        public SmtpServerFacts()
-        {
-            TestPort = new Random(Environment.TickCount).Next(10000, 65000);
         }
 
         private void SendMail(int port, string mailFrom, string recipients, string subject, string body)

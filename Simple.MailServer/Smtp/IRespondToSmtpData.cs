@@ -1,7 +1,5 @@
 ﻿#region Header
-// IRespondToSmtpData.cs
-// 
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +19,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #endregion
+
 namespace Simple.MailServer.Smtp
 {
     public interface IRespondToSmtpData
     {
-        SmtpResponse DataStart(SmtpSessionInfo sessionInfo);
-        SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf);
-        SmtpResponse DataEnd(SmtpSessionInfo sessionInfo);
+        SmtpResponse DataStart(ISmtpSessionInfo sessionInfo);
+        SmtpResponse DataLine(ISmtpSessionInfo sessionInfo, byte[] lineBuf);
+        SmtpResponse DataEnd(ISmtpSessionInfo sessionInfo);
     }
 }

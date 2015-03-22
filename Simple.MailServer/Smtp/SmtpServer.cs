@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Logging;
-using Simple.MailServer.Smtp.Config;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -29,7 +27,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Simple.MailServer.Logging;
 using Simple.MailServer.Mime;
+using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
@@ -50,7 +50,7 @@ namespace Simple.MailServer.Smtp
         private ISmtpResponderFactory _defaultResponderFactory;
         public ISmtpResponderFactory DefaultResponderFactory
         {
-            get { return _defaultResponderFactory ?? (_defaultResponderFactory = new DefaultSmtpResponderFactory<ISmtpServerConfiguration>(Configuration, EmailValidator)); }
+            get { return _defaultResponderFactory ?? (_defaultResponderFactory = new SmtpResponderFactory<ISmtpServerConfiguration>(Configuration, EmailValidator)); }
             set { _defaultResponderFactory = value; }
         }
 
@@ -68,6 +68,13 @@ namespace Simple.MailServer.Smtp
             Watchdog = new IdleConnectionDisconnectWatchdog<SmtpServer>(this);
 
             WatchForConfigurationChange();
+        }
+
+        public static SmtpServer CreateAndBind(IPAddress serverListenAddress, int port)
+        {
+            var smtpServer = new SmtpServer();
+            smtpServer.BindAndListenTo(serverListenAddress, port);
+            return smtpServer;
         }
 
         private void WatchForConfigurationChange()
@@ -205,20 +212,18 @@ namespace Simple.MailServer.Smtp
             rawLineDecoder.DetectedActivity += (s, e) => session.UpdateActivity();
             rawLineDecoder.ProcessLineCommand += async (s, e) =>
             {
-                // ReSharper disable PossibleUnintendedReferenceComparison
                 var response = sessionInfoParseResponder.ProcessLineCommand(e.Buffer);
-                if (response == SmtpResponse.None) return;
+                if (response == null || !response.HasValue) return;
 
-                if (response == SmtpResponse.Disconnect)
+                if (response.ResponseCode == SmtpResponses.DisconnectResponseCode)
                 {
                     await SendResponseAsync(connection, response);
 
                     MailServerLogger.Instance.Debug(String.Format("Remote connection disconnected {0}", connection.RemoteEndPoint));
                     rawLineDecoder.Cancel();
-                    session.Disconnect();
+                    await Task.Delay(100).ContinueWith(t => session.Disconnect());
                     return;
                 }
-                // ReSharper restore PossibleUnintendedReferenceComparison
 
                 await SendResponseAsync(connection, response);
             };

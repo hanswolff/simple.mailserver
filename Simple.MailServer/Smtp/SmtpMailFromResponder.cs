@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,32 @@
 // THE SOFTWARE.
 #endregion
 
+using System;
 using Simple.MailServer.Mime;
-using System.IO;
-using System.Text;
+using Simple.MailServer.Smtp.Config;
 
-namespace Simple.MailServer.Tests
+namespace Simple.MailServer.Smtp
 {
-    public static class TestHelpers
+    public class SmtpMailFromResponder<T> : IRespondToSmtpMailFrom where T : IConfiguredSmtpRestrictions
     {
-        public static MemoryStream TextToStream(string text)
+        protected readonly T Configuration;
+        private readonly IEmailValidator _emailValidator;
+
+        public SmtpMailFromResponder(T configuration, IEmailValidator emailValidator)
         {
-            return new MemoryStream(Encoding.Default.GetBytes(text));
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            if (emailValidator == null) throw new ArgumentNullException("emailValidator");
+
+            Configuration = configuration;
+            _emailValidator = emailValidator;
         }
 
-        public static string ReadMemoryStreamIntoString(MemoryStream mem)
+        public SmtpResponse VerifyMailFrom(ISmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
         {
-            return Encoding.Default.GetString(mem.ToArray());
-        }
+            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
+                return SmtpResponses.SyntaxError;
 
-        public static StringReaderStream CreateStringReaderStreamFromText(string text, int bufferSize = 4096)
-        {
-            var textAsBytes = Encoding.ASCII.GetBytes(text ?? "");
-            var memoryStream = new MemoryStream(textAsBytes);
-            return new StringReaderStream(memoryStream, bufferSize);
+            return SmtpResponses.OK;
         }
-
     }
 }

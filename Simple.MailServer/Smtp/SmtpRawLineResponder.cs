@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,18 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpRawLineResponder<T> : IRespondToSmtpRawLine where T : IConfiguredSmtpRestrictions
+    public class SmtpRawLineResponder<T> : IRespondToSmtpRawLine where T : IConfiguredSmtpRestrictions
     {
         protected readonly T Configuration;
 
-        public DefaultSmtpRawLineResponder(T configuration)
+        public SmtpRawLineResponder(T configuration)
         {
             Configuration = configuration;
         }
 
-        public SmtpResponse RawLine(SmtpSessionInfo sessionInfo, string line)
+        public SmtpResponse RawLine(ISmtpSessionInfo sessionInfo, string line)
         {
-            return SmtpResponse.None;
+            return SmtpResponses.None;
         }
     }
 }

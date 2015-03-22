@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,18 @@ using System.Collections.Generic;
 
 namespace Simple.MailServer.Smtp
 {
-    public class SmtpSessionInfo
+    public interface ISmtpSessionInfo
+    {
+        bool HasData { get; set; }
+        SmtpIdentification Identification { get; set; }
+        MailAddressWithParameters MailFrom { get; set; }
+        List<MailAddressWithParameters> Recipients { get; }
+        DateTime CreatedTimestamp { get; }
+
+        void Reset();
+    }
+
+    class SmtpSessionInfo : ISmtpSessionInfo
     {
         public bool HasData { get; set; }
         public SmtpIdentification Identification { get; set; }

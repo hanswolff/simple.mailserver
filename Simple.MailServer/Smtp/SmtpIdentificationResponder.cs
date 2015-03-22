@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,43 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Mime;
 using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpRecipientToResponder<T> : IRespondToSmtpRecipientTo where T : IConfiguredSmtpRestrictions
+    public class SmtpIdentificationResponder<T> : IRespondToSmtpIdentification where T : IConfiguredSmtpRestrictions
     {
         protected readonly T Configuration;
-        private readonly IEmailValidator _emailValidator;
 
-        public DefaultSmtpRecipientToResponder(T configuration, IEmailValidator emailValidator)
+        public SmtpIdentificationResponder(T configuration)
         {
             Configuration = configuration;
-            _emailValidator = emailValidator;
         }
 
-        public SmtpResponse VerifyRecipientTo(SmtpSessionInfo sessionInfo, MailAddressWithParameters mailAddressWithParameters)
+        public virtual SmtpResponse VerifyIdentification(ISmtpSessionInfo sessionInfo, SmtpIdentification smtpIdentification)
         {
-            if (!_emailValidator.Validate(mailAddressWithParameters.MailAddress))
-                return SmtpResponse.SyntaxError;
+            if (smtpIdentification.Mode == SmtpIdentificationMode.HELO)
+            {
+                return VerifyHelo();
+            }
 
-            return SmtpResponse.OK;
+            if (smtpIdentification.Mode == SmtpIdentificationMode.EHLO)
+            {
+                return VerifyEhlo();
+            }
+
+            return new SmtpResponse(500, "Invalid Identification (" + smtpIdentification.Mode + ")");
+        }
+
+        private SmtpResponse VerifyHelo()
+        {
+            return SmtpResponses.OK;
+        }
+
+        private SmtpResponse VerifyEhlo()
+        {
+            var response = new SmtpResponse(250, "SIZE " + Configuration.MaxMailMessageSize, new[] { "250-PIPELINING" });
+            return response;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,28 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpIdentificationResponder<T> : IRespondToSmtpIdentification where T : IConfiguredSmtpRestrictions
+    public class SmtpDataResponder<T> : IRespondToSmtpData where T : IConfiguredSmtpRestrictions
     {
         protected readonly T Configuration;
 
-        public DefaultSmtpIdentificationResponder(T configuration)
+        public SmtpDataResponder(T configuration)
         {
             Configuration = configuration;
         }
 
-        public virtual SmtpResponse VerifyIdentification(SmtpSessionInfo sessionInfo, SmtpIdentification smtpIdentification)
+        public virtual SmtpResponse DataStart(ISmtpSessionInfo sessionInfo)
         {
-            if (smtpIdentification.Mode == SmtpIdentificationMode.HELO)
-            {
-                return VerifyHelo();
-            }
-
-            if (smtpIdentification.Mode == SmtpIdentificationMode.EHLO)
-            {
-                return VerifyEhlo();
-            }
-
-            return new SmtpResponse(500, "Invalid Identification (" + smtpIdentification.Mode + ")");
+            return SmtpResponses.DataStart;
         }
 
-        private SmtpResponse VerifyHelo()
+        public virtual SmtpResponse DataLine(ISmtpSessionInfo sessionInfo, byte[] lineBuf)
         {
-            return SmtpResponse.OK;
+            return SmtpResponses.None;
         }
 
-        private SmtpResponse VerifyEhlo()
+        public virtual SmtpResponse DataEnd(ISmtpSessionInfo sessionInfo)
         {
-            var response = new SmtpResponse(250, "SIZE " + Configuration.MaxMailMessageSize, new[] { "250-PIPELINING" });
-            return response;
+            return SmtpResponses.OK;
         }
     }
 }

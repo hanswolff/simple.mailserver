@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,32 +20,39 @@
 // THE SOFTWARE.
 #endregion
 
-using Simple.MailServer.Smtp.Config;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading;
+using Simple.MailServer.Mime;
 
-namespace Simple.MailServer.Smtp
+namespace Simple.MailServer.Tests.Helpers
 {
-    public class DefaultSmtpDataResponder<T> : IRespondToSmtpData where T : IConfiguredSmtpRestrictions
+    static class TestHelpers
     {
-        protected readonly T Configuration;
+        private static int _testPort = new Random(Environment.TickCount).Next(10000, 60000);
 
-        public DefaultSmtpDataResponder(T configuration)
+        public static int GetTestPort()
         {
-            Configuration = configuration;
+            return Interlocked.Increment(ref _testPort);
         }
 
-        public virtual SmtpResponse DataStart(SmtpSessionInfo sessionInfo)
+        public static MemoryStream TextToStream(string text)
         {
-            return SmtpResponse.DataStart;
+            return new MemoryStream(Encoding.Default.GetBytes(text));
         }
 
-        public virtual SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf)
+        public static string ReadMemoryStreamIntoString(MemoryStream mem)
         {
-            return SmtpResponse.None;
+            return Encoding.Default.GetString(mem.ToArray());
         }
 
-        public virtual SmtpResponse DataEnd(SmtpSessionInfo sessionInfo)
+        public static StringReaderStream CreateStringReaderStreamFromText(string text, int bufferSize = 4096)
         {
-            return SmtpResponse.OK;
+            var textAsBytes = Encoding.ASCII.GetBytes(text ?? "");
+            var memoryStream = new MemoryStream(textAsBytes);
+            return new StringReaderStream(memoryStream, bufferSize);
         }
+
     }
 }

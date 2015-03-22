@@ -28,7 +28,7 @@ using System.Text;
 
 namespace Simple.MailServer.Example
 {
-    class ExampleDataResponder : DefaultSmtpDataResponder<ISmtpServerConfiguration>
+    class ExampleDataResponder : SmtpDataResponder<ISmtpServerConfiguration>
     {
         private readonly string _mailDir;
 
@@ -45,20 +45,20 @@ namespace Simple.MailServer.Example
                 Directory.CreateDirectory(directory);
         }
 
-        public override SmtpResponse DataStart(SmtpSessionInfo sessionInfo)
+        public override SmtpResponse DataStart(ISmtpSessionInfo sessionInfo)
         {
             Console.WriteLine("Start receiving mail: {0}", GetFileNameFromSessionInfo(sessionInfo));
-            return SmtpResponse.DataStart;
+            return SmtpResponses.DataStart;
         }
 
-        private string GetFileNameFromSessionInfo(SmtpSessionInfo sessionInfo)
+        private string GetFileNameFromSessionInfo(ISmtpSessionInfo sessionInfo)
         {
             var fileName = sessionInfo.CreatedTimestamp.ToString("yyyy-MM-dd_HHmmss_fff") + ".eml";
             var fullName = Path.Combine(_mailDir, fileName);
             return fullName;
         }
 
-        public override SmtpResponse DataLine(SmtpSessionInfo sessionInfo, byte[] lineBuf)
+        public override SmtpResponse DataLine(ISmtpSessionInfo sessionInfo, byte[] lineBuf)
         {
             var fileName = GetFileNameFromSessionInfo(sessionInfo);
 
@@ -73,10 +73,10 @@ namespace Simple.MailServer.Example
                 stream.WriteByte(10);
             }
 
-            return SmtpResponse.None;
+            return SmtpResponses.None;
         }
 
-        public override SmtpResponse DataEnd(SmtpSessionInfo sessionInfo)
+        public override SmtpResponse DataEnd(ISmtpSessionInfo sessionInfo)
         {
             var fileName = GetFileNameFromSessionInfo(sessionInfo);
             var size = GetFileSize(fileName);
@@ -84,7 +84,7 @@ namespace Simple.MailServer.Example
             Console.WriteLine("Mail received ({0} bytes): {1}", size, fileName);
 
             var successMessage = String.Format("{0} bytes received", size);
-            var response = SmtpResponse.OK.CloneAndChange(successMessage);
+            var response = SmtpResponses.OK.CloneAndChange(successMessage);
 
             return response;
         }

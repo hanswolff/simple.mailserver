@@ -1,5 +1,5 @@
 ﻿#region Header
-// Copyright (c) 2013 Hans Wolff
+// Copyright (c) 2013-2015 Hans Wolff
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,16 @@ using Simple.MailServer.Smtp.Config;
 
 namespace Simple.MailServer.Smtp
 {
-    public class DefaultSmtpVerifyResponder<T> : IRespondToSmtpVerify where T : IConfiguredSmtpRestrictions
+    public class SmtpVerifyResponder<T> : IRespondToSmtpVerify where T : IConfiguredSmtpRestrictions
     {
         protected readonly T Configuration;
 
-        public DefaultSmtpVerifyResponder(T configuration)
+        public SmtpVerifyResponder(T configuration)
         {
             Configuration = configuration;
         }
 
-        public SmtpResponse Verify(SmtpSessionInfo sessionInfo, string arguments)
+        public SmtpResponse Verify(ISmtpSessionInfo sessionInfo, string arguments)
         {
             return new SmtpResponse(252, "2.5.2 Send some mail, i'll try my best");
         }
