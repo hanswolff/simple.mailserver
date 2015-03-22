@@ -15,8 +15,9 @@ Simple SMTP Mail Server in C# 5 (using async features)
 
 ## Planned Features
 
-- basic POP3 protocol (extendible through interfaces)
+- SMTP Authentication
 - SSL/TLS support
+- basic POP3 protocol
 
 # Related Projects
 
