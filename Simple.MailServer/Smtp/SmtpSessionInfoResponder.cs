@@ -65,11 +65,6 @@ namespace Simple.MailServer.Smtp
 
         protected override SmtpResponse ProcessCommandEhlo(string name, string arguments)
         {
-            if (String.IsNullOrWhiteSpace(arguments))
-            {
-                return SmtpResponses.EhloMissingDomainAddress;
-            }
-
             var identification = new SmtpIdentification(SmtpIdentificationMode.EHLO, arguments);
             var response = _responderFactory.IdentificationResponder.VerifyIdentification(SessionInfo, identification);
 
@@ -83,11 +78,6 @@ namespace Simple.MailServer.Smtp
 
         protected override SmtpResponse ProcessCommandHelo(string name, string arguments)
         {
-            if (String.IsNullOrWhiteSpace(arguments))
-            {
-                return SmtpResponses.HeloMissingDomainAddress;
-            }
-
             var identification = new SmtpIdentification(SmtpIdentificationMode.HELO, arguments);
             var response = _responderFactory.IdentificationResponder.VerifyIdentification(SessionInfo, identification);
 
