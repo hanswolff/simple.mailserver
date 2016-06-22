@@ -183,7 +183,13 @@ namespace Simple.MailServer.Smtp
             Connections[connection.RemoteEndPoint] = connection;
             ClientConnected(this, new SmtpConnectionEventArgs(connection));
 
-            await CreateSessionAndProcessCommands(connection);
+            try
+            {
+                await CreateSessionAndProcessCommands(connection);
+            } catch(Exception ex)
+            {
+                MailServerLogger.Instance.Error(ex);
+            }
         }
 
         private async Task CreateSessionAndProcessCommands(SmtpConnection connection)
@@ -237,10 +243,17 @@ namespace Simple.MailServer.Smtp
         {
             LogResponse(response);
 
-            foreach (var additional in response.AdditionalLines)
-                await connection.WriteLineAsyncAndFireEvents(additional);
+            try
+            {
+                foreach (var additional in response.AdditionalLines)
+                    await connection.WriteLineAsyncAndFireEvents(additional);
 
-            await connection.WriteLineAsyncAndFireEvents(response.ResponseCode + " " + response.ResponseText);
+                await connection.WriteLineAsyncAndFireEvents(response.ResponseCode + " " + response.ResponseText);
+
+            } catch(Exception ex)
+            {
+                MailServerLogger.Instance.Error(ex);
+            }
         }
 
         private static void LogResponse(SmtpResponse response)
