@@ -62,10 +62,10 @@ namespace Simple.MailServer.Smtp
 
         public SmtpServer()
         {
-            Bindings = new ConcurrentBag<PortListener>();
-            Connections = new ConcurrentDictionary<EndPoint, SmtpConnection>();
+            Bindings      = new ConcurrentBag<PortListener>();
+            Connections   = new ConcurrentDictionary<EndPoint, SmtpConnection>();
             Configuration = new SmtpServerConfiguration();
-            Watchdog = new IdleConnectionDisconnectWatchdog<SmtpServer>(this);
+            Watchdog      = new IdleConnectionDisconnectWatchdog<SmtpServer>(this);
 
             WatchForConfigurationChange();
         }
@@ -74,6 +74,7 @@ namespace Simple.MailServer.Smtp
         {
             var smtpServer = new SmtpServer();
             smtpServer.BindAndListenTo(serverListenAddress, port);
+
             return smtpServer;
         }
 
@@ -156,6 +157,7 @@ namespace Simple.MailServer.Smtp
 
                 var portBinding = CreateNewPortBindingAndStartListen(serverListenAddress, serverPort);
                 Bindings.Add(portBinding);
+
                 return portBinding;
             }
         }
@@ -172,6 +174,7 @@ namespace Simple.MailServer.Smtp
             portBinding.ClientConnected += PortBindingClientConnected;
             portBinding.StartListen();
             MailServerLogger.Instance.Info(String.Format("Started listening to {0}:{1}", serverListenAddress, serverPort));
+
             return portBinding;
         }
 
@@ -180,10 +183,19 @@ namespace Simple.MailServer.Smtp
             var connection = new SmtpConnection(this, serverPortBinding, newConnectedTcpClient);
             connection.ClientDisconnected += (sender, args) => ClientDisconnected(this, new SmtpConnectionEventArgs(args.Connection));
 
+            SmtpConnection cnn;
+            connection.ClientDisconnected += (sender, args) => Connections.TryRemove(connection.RemoteEndPoint, out cnn);
+
             Connections[connection.RemoteEndPoint] = connection;
             ClientConnected(this, new SmtpConnectionEventArgs(connection));
 
-            await CreateSessionAndProcessCommands(connection);
+            try
+            {
+                await CreateSessionAndProcessCommands(connection);
+            } catch(Exception ex)
+            {
+                MailServerLogger.Instance.Error(ex);
+            }
         }
 
         private async Task CreateSessionAndProcessCommands(SmtpConnection connection)
@@ -237,10 +249,17 @@ namespace Simple.MailServer.Smtp
         {
             LogResponse(response);
 
-            foreach (var additional in response.AdditionalLines)
-                await connection.WriteLineAsyncAndFireEvents(additional);
+            try
+            {
+                foreach (var additional in response.AdditionalLines)
+                    await connection.WriteLineAsyncAndFireEvents(additional);
 
-            await connection.WriteLineAsyncAndFireEvents(response.ResponseCode + " " + response.ResponseText);
+                await connection.WriteLineAsyncAndFireEvents(response.ResponseCode + " " + response.ResponseText);
+
+            } catch(Exception ex)
+            {
+                MailServerLogger.Instance.Error(ex);
+            }
         }
 
         private static void LogResponse(SmtpResponse response)
